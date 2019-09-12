@@ -4,9 +4,9 @@ import io.circe.{ Codec, Decoder, Encoder }
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
 import io.circe.testing.CodecTests
-import io.circe.tests.CirceSuite
-import io.circe.tests.examples._
 import shapeless.test.illTyped
+
+import examples._
 
 class EnumerationSemiautoDerivedSuite extends CirceSuite {
   implicit val decodeCardinalDirection: Decoder[CardinalDirection] = deriveEnumerationDecoder

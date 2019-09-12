@@ -7,10 +7,10 @@ import io.circe.CursorOp.DownField
 import io.circe.generic.extras.auto._
 import io.circe.literal._
 import io.circe.testing.CodecTests
-import io.circe.tests.CirceSuite
-import io.circe.tests.examples._
 import org.scalacheck.{ Arbitrary, Gen }
 import org.scalacheck.Arbitrary.arbitrary
+
+import examples._
 
 object ConfiguredAutoDerivedSuite {
 

@@ -4,7 +4,6 @@ import cats.kernel.Eq
 import io.circe.{ Decoder, Encoder }
 import io.circe.literal._
 import io.circe.testing.CodecTests
-import io.circe.tests.CirceSuite
 import org.scalacheck.{ Arbitrary, Gen }
 import org.scalacheck.Arbitrary.arbitrary
 
