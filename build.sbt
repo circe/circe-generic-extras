@@ -69,7 +69,10 @@ val allSettings = baseSettings ++ publishSettings
 
 val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
 
-val genericExtras = crossProject(JSPlatform, JVMPlatform)
+lazy val root =
+  project.in(file(".")).settings(allSettings).settings(noPublishSettings).aggregate(genericExtrasJVM, genericExtrasJS)
+
+lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
   .withoutSuffixFor(JVMPlatform)
   .crossType(CrossType.Pure)
   .in(file("generic-extras"))
@@ -90,6 +93,9 @@ val genericExtras = crossProject(JSPlatform, JVMPlatform)
     addMappingsToSiteDir(mappings in (Compile, packageDoc), docMappingsApiDir)
   )
   .jvmSettings(fork in Test := true)
+
+lazy val genericExtrasJVM = genericExtras.jvm
+lazy val genericExtrasJS = genericExtras.js
 
 lazy val publishSettings = Seq(
   releaseCrossBuild := true,
@@ -124,6 +130,12 @@ lazy val publishSettings = Seq(
       url("https://twitter.com/travisbrown")
     )
   )
+)
+
+lazy val noPublishSettings = Seq(
+  publish := {},
+  publishLocal := {},
+  publishArtifact := false
 )
 
 credentials ++= (
