@@ -41,6 +41,7 @@ val baseSettings = Seq(
       )
     else
       Seq(
+        "-Ymacro-annotations",
         "-Ywarn-unused:imports"
       )
   ),
@@ -61,9 +62,6 @@ val baseSettings = Seq(
         compilerPlugin(("org.scalamacros" % "paradise" % paradiseVersion).cross(CrossVersion.patch))
       )
     } else Nil
-  ),
-  scalacOptions ++= (
-    if (priorTo2_13(scalaVersion.value)) Nil else Seq("-Ymacro-annotations")
   )
 )
 
