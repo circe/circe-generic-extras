@@ -12,6 +12,30 @@ to this separate repository after 0.12.1, in preparation for Circe's 1.0.0 relea
 
 This library is experimental and its development is primarily community-supported.
 
+## Usage
+
+This library as functionality to parse JSON in different cased formats such as `snake_case`, `kabeb-case` or `PascalCase`.
+
+You can enable different case modes by making a custom configuration.
+
+```json
+{
+  "foo-bar": "foobar"
+}
+```
+
+```scala
+import io.circe.generic.extras.semiauto._
+import io.circe.generic.extras.Configuration
+
+case class Foo(fooBar: String)
+
+implicit val customConfig: Configuration = Configuration.default.withKebabCaseMemberNames
+
+implicit val fooEncoder: Encoder[Foo] = deriveEncoder
+implicit val fooDecoder: Decoder[Foo] = deriveDecoder
+```
+
 ## Contributors and participation
 
 All Circe projects support the [Scala code of conduct][code-of-conduct] and we want
