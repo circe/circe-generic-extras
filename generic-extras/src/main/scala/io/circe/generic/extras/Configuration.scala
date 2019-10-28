@@ -86,7 +86,7 @@ object Configuration {
   }
 
   val pascalCaseTransformation: String => String = s => {
-    s"${Character.toUpperCase(s.charAt(0))}${s.substring(1)}"
+    s"${s.charAt(0).toUpper}${s.substring(1)}"
   }
 }
 
