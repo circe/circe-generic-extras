@@ -235,7 +235,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
   property("Configuration#transformConstructorNames should support constructor name transformation with PascalCase") {
     forAll { foo: ConfigExampleFoo =>
-      implicit val kebabCaseConfig: Configuration =
+      implicit val pascalCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withPascalCaseConstructorNames
 
       import foo._
