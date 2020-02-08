@@ -14,12 +14,12 @@ val compilerOptions = Seq(
   "-Ywarn-numeric-widen"
 )
 
-val circeVersion = "0.12.3"
+val circeVersion = "0.13.0"
 val paradiseVersion = "2.1.1"
 
-val jawnVersion = "0.14.3"
+val jawnVersion = "1.0.0"
 val scalaTestVersion = "3.1.0"
-val scalaTestPlusVersion = "3.1.0.0-RC2"
+val scalaTestPlusVersion = "3.1.0.1"
 
 val previousCirceGenericExtrasVersion = "0.12.2"
 
@@ -85,7 +85,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
       "io.circe" %%% "circe-literal" % circeVersion % Test,
       "io.circe" %%% "circe-testing" % circeVersion % Test,
       "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
-      "org.scalatestplus" %%% "scalatestplus-scalacheck" % scalaTestPlusVersion % Test,
+      "org.scalatestplus" %%% "scalacheck-1-14" % scalaTestPlusVersion % Test,
       "org.typelevel" %% "jawn-parser" % jawnVersion % Test
     ),
     ghpagesNoJekyll := true,
