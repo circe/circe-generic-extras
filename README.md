@@ -32,8 +32,8 @@ case class Foo(fooBar: String)
 
 implicit val customConfig: Configuration = Configuration.default.withKebabCaseMemberNames
 
-implicit val fooEncoder: Encoder[Foo] = deriveEncoder
-implicit val fooDecoder: Decoder[Foo] = deriveDecoder
+implicit val fooEncoder: Encoder[Foo] = deriveConfiguredEncoder
+implicit val fooDecoder: Decoder[Foo] = deriveConfiguredDecoder
 ```
 
 ## Contributors and participation
