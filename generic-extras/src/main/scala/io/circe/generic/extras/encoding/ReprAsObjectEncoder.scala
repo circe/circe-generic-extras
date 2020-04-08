@@ -2,6 +2,7 @@ package io.circe.generic.extras.encoding
 
 import io.circe.{ Encoder, Json, JsonObject }
 import io.circe.generic.extras.ConfigurableDeriver
+import scala.annotation.implicitNotFound
 import scala.language.experimental.macros
 
 /**
@@ -9,6 +10,13 @@ import scala.language.experimental.macros
  *
  * Note that users typically will not work with instances of this class.
  */
+@implicitNotFound(
+  """Could not found ConfiguredAsObjectCodec for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 trait ReprAsObjectEncoder[A] extends Encoder.AsObject[A] {
   def configuredEncodeObject(a: A)(
     transformMemberNames: String => String,

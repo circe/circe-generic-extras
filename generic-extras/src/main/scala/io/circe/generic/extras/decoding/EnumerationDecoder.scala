@@ -2,9 +2,17 @@ package io.circe.generic.extras.decoding
 
 import io.circe.{ Decoder, DecodingFailure, HCursor }
 import io.circe.generic.extras.Configuration
+import scala.annotation.implicitNotFound
 import shapeless.{ :+:, CNil, Coproduct, HNil, Inl, Inr, LabelledGeneric, Witness }
 import shapeless.labelled.{ FieldType, field }
 
+@implicitNotFound(
+  """Could not found ConfiguredAsObjectCodec for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class EnumerationDecoder[A] extends Decoder[A]
 
 object EnumerationDecoder {

@@ -4,6 +4,7 @@ import cats.data.Validated
 import io.circe.{ ACursor, Decoder, DecodingFailure, HCursor }
 import io.circe.Json.JNull
 import io.circe.generic.extras.ConfigurableDeriver
+import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
 import scala.language.experimental.macros
 import shapeless.HNil
@@ -15,6 +16,13 @@ import shapeless.HNil
  * contains unsafe methods (specifically the two `configuredDecode` methods,
  * which allow passing in an untyped map of default field values).
  */
+@implicitNotFound(
+  """Could not found ConfiguredAsObjectCodec for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class ReprDecoder[A] extends Decoder[A] {
   def configuredDecode(c: HCursor)(
     transformMemberNames: String => String,
