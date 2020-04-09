@@ -12,7 +12,7 @@ import shapeless.ops.hlist.ToTraversable
 import shapeless.ops.record.Keys
 
 @implicitNotFound(
-  """Could not found ConfiguredAsObjectCodec for type ${A}.
+  """Could not find ConfiguredDecoder for type ${A}.
 Some possible causes for this:
 - ${A} isn't a case class or sealed trat
 - some of ${A}'s members don't have codecs of their own

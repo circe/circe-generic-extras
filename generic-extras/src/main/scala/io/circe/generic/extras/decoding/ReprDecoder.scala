@@ -17,7 +17,7 @@ import shapeless.HNil
  * which allow passing in an untyped map of default field values).
  */
 @implicitNotFound(
-  """Could not found ConfiguredAsObjectCodec for type ${A}.
+  """Could not find ReprDecoder for type ${A}.
 Some possible causes for this:
 - ${A} isn't a case class or sealed trat
 - some of ${A}'s members don't have codecs of their own

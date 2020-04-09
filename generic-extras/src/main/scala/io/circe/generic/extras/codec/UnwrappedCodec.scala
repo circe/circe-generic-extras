@@ -5,7 +5,7 @@ import scala.annotation.implicitNotFound
 import shapeless.{ ::, Generic, HNil, Lazy }
 
 @implicitNotFound(
-  """Could not found ConfiguredAsObjectCodec for type ${A}.
+  """Could not find UnwrappedCodec for type ${A}.
 Some possible causes for this:
 - ${A} isn't a case class or sealed trat
 - some of ${A}'s members don't have codecs of their own

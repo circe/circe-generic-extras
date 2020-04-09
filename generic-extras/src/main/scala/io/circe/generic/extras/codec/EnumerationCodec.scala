@@ -7,7 +7,7 @@ import shapeless.{ :+:, CNil, Coproduct, HNil, Inl, Inr, LabelledGeneric, Witnes
 import shapeless.labelled.{ FieldType, field }
 
 @implicitNotFound(
-  """Could not found ConfiguredAsObjectCodec for type ${A}.
+  """Could not find EnumerationCodec for type ${A}.
 Some possible causes for this:
 - ${A} isn't a case class or sealed trat
 - some of ${A}'s members don't have codecs of their own

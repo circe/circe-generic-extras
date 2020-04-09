@@ -16,7 +16,7 @@ import shapeless.HNil
  * Note that users typically will not work with instances of this class.
  */
 @implicitNotFound(
-  """Could not found ConfiguredAsObjectCodec for type ${A}.
+  """Could not find ReprAsObjectCodec for type ${A}.
 Some possible causes for this:
 - ${A} isn't a case class or sealed trat
 - some of ${A}'s members don't have codecs of their own
