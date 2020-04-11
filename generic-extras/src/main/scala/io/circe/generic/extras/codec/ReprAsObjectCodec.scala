@@ -5,6 +5,7 @@ import io.circe.{ Decoder, DecodingFailure, HCursor, JsonObject }
 import io.circe.generic.extras.ConfigurableDeriver
 import io.circe.generic.extras.decoding.ReprDecoder
 import io.circe.generic.extras.encoding.ReprAsObjectEncoder
+import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
 import scala.language.experimental.macros
 import shapeless.HNil
@@ -14,6 +15,13 @@ import shapeless.HNil
  *
  * Note that users typically will not work with instances of this class.
  */
+@implicitNotFound(
+  """Could not find ReprAsObjectCodec for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class ReprAsObjectCodec[A] extends ReprDecoder[A] with ReprAsObjectEncoder[A]
 
 object ReprAsObjectCodec {

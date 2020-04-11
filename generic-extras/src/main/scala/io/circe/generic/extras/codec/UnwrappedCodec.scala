@@ -1,8 +1,16 @@
 package io.circe.generic.extras.codec
 
 import io.circe.{ Codec, Decoder, Encoder, HCursor, Json }
+import scala.annotation.implicitNotFound
 import shapeless.{ ::, Generic, HNil, Lazy }
 
+@implicitNotFound(
+  """Could not find UnwrappedCodec for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class UnwrappedCodec[A] extends Codec[A]
 
 object UnwrappedCodec {

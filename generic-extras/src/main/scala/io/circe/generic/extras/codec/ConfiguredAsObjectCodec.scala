@@ -6,10 +6,18 @@ import io.circe.generic.extras.{ Configuration, JsonKey }
 import io.circe.generic.extras.decoding.ConfiguredDecoder
 import io.circe.generic.extras.encoding.ConfiguredAsObjectEncoder
 import io.circe.generic.extras.util.RecordToMap
+import scala.annotation.implicitNotFound
 import shapeless.{ Annotations, Coproduct, Default, HList, LabelledGeneric, Lazy }
 import shapeless.ops.hlist.ToTraversable
 import shapeless.ops.record.Keys
 
+@implicitNotFound(
+  """Could not find ConfiguredAsObjectCodec for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class ConfiguredAsObjectCodec[A] extends DerivedAsObjectCodec[A]
 
 object ConfiguredAsObjectCodec {

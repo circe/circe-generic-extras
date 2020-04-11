@@ -2,9 +2,17 @@ package io.circe.generic.extras.codec
 
 import io.circe.{ Codec, Decoder, DecodingFailure, HCursor, Json }
 import io.circe.generic.extras.Configuration
+import scala.annotation.implicitNotFound
 import shapeless.{ :+:, CNil, Coproduct, HNil, Inl, Inr, LabelledGeneric, Witness }
 import shapeless.labelled.{ FieldType, field }
 
+@implicitNotFound(
+  """Could not find EnumerationCodec for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class EnumerationCodec[A] extends Codec[A]
 
 object EnumerationCodec {

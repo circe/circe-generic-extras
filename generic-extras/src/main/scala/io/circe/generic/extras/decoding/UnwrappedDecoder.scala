@@ -1,8 +1,16 @@
 package io.circe.generic.extras.decoding
 
 import io.circe.{ Decoder, HCursor }
+import scala.annotation.implicitNotFound
 import shapeless.{ ::, Generic, HNil, Lazy }
 
+@implicitNotFound(
+  """Could not find UnwrappedDecoder for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class UnwrappedDecoder[A] extends Decoder[A]
 
 object UnwrappedDecoder {

@@ -4,11 +4,19 @@ import io.circe.JsonObject
 import io.circe.generic.encoding.DerivedAsObjectEncoder
 import io.circe.generic.extras.{ Configuration, JsonKey }
 import java.util.concurrent.ConcurrentHashMap
+import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
 import shapeless.{ Annotations, Coproduct, HList, LabelledGeneric, Lazy }
 import shapeless.ops.hlist.ToTraversable
 import shapeless.ops.record.Keys
 
+@implicitNotFound(
+  """Could not find ConfiguredAsObjectEncoder for type ${A}.
+Some possible causes for this:
+- ${A} isn't a case class or sealed trat
+- some of ${A}'s members don't have codecs of their own
+- missing implicit Configuration"""
+)
 abstract class ConfiguredAsObjectEncoder[A](config: Configuration) extends DerivedAsObjectEncoder[A] {
   private[this] val constructorNameCache: ConcurrentHashMap[String, String] =
     new ConcurrentHashMap[String, String]()
