@@ -14,7 +14,7 @@ This library is experimental and its development is primarily community-supporte
 
 ## Usage
 
-This library as functionality to parse JSON in different cased formats such as `snake_case`, `kabeb-case` or `PascalCase`.
+This library as functionality to parse JSON in different cased formats such as `snake_case`, `kebab-case` or `PascalCase`.
 
 You can enable different case modes by making a custom configuration.
 
