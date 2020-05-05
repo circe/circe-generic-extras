@@ -63,6 +63,17 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
   }
 
+  "Configuration#transformMemberNames" should "support member name transformation using SCREAMING_SNAKE_CASE" in forAll {
+    foo: ConfigExampleFoo =>
+      implicit val snakeCaseConfig: Configuration = Configuration.default.withScreamingSnakeCaseMemberNames
+
+      import foo._
+      val json = json"""{ "THIS_IS_A_FIELD": $thisIsAField, "A": $a, "B": $b}"""
+
+      assert(Encoder[ConfigExampleFoo].apply(foo) === json)
+      assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+  }
+
   "Configuration#transformMemberNames" should "support member name transformation using kebab-case" in forAll {
     foo: ConfigExampleFoo =>
       implicit val kebabCaseConfig: Configuration = Configuration.default.withKebabCaseMemberNames
@@ -166,6 +177,18 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       import foo._
       val json = json"""{ "type": "config_example_foo", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
+
+      assert(Encoder[ConfigExampleBase].apply(foo) === json)
+      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+  }
+
+  "Configuration#transformConstructorNames" should "support constructor name transformation with SCREAMING_SNAKE_CASE" in forAll {
+    foo: ConfigExampleFoo =>
+      implicit val snakeCaseConfig: Configuration =
+        Configuration.default.withDiscriminator("type").withScreamingSnakeCaseConstructorNames
+
+      import foo._
+      val json = json"""{ "type": "CONFIG_EXAMPLE_FOO", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
 
       assert(Encoder[ConfigExampleBase].apply(foo) === json)
       assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))

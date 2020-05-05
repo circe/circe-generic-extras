@@ -27,12 +27,20 @@ final case class Configuration(
     transformMemberNames = Configuration.snakeCaseTransformation
   )
 
+  def withScreamingSnakeCaseMemberNames: Configuration = copy(
+    transformMemberNames = Configuration.screamingSnakeCaseTransformation
+  )
+
   def withKebabCaseMemberNames: Configuration = copy(
     transformMemberNames = Configuration.kebabCaseTransformation
   )
 
   def withSnakeCaseConstructorNames: Configuration = copy(
     transformConstructorNames = Configuration.snakeCaseTransformation
+  )
+
+  def withScreamingSnakeCaseConstructorNames: Configuration = copy(
+    transformConstructorNames = Configuration.screamingSnakeCaseTransformation
   )
 
   def withKebabCaseConstructorNames: Configuration = copy(
@@ -54,6 +62,11 @@ object Configuration {
   val snakeCaseTransformation: String => String = s => {
     val partial = basePattern.matcher(s).replaceAll("$1_$2")
     swapPattern.matcher(partial).replaceAll("$1_$2").toLowerCase
+  }
+
+  val screamingSnakeCaseTransformation: String => String = s => {
+    val partial = basePattern.matcher(s).replaceAll("$1_$2")
+    swapPattern.matcher(partial).replaceAll("$1_$2").toUpperCase
   }
 
   val kebabCaseTransformation: String => String = s => {
