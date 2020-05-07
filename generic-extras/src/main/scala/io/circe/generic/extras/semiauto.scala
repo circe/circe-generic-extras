@@ -91,8 +91,7 @@ object semiauto {
   def deriveUnwrappedCodec[A](implicit codec: Lazy[UnwrappedCodec[A]]): Codec[A] = codec.value
 
   final class DerivationHelper[A] {
-    final def incomplete[P <: HList, C, D <: HList, T <: HList, R <: HList](
-      implicit
+    final def incomplete[P <: HList, C, D <: HList, T <: HList, R <: HList](implicit
       ffp: FnFromProduct.Aux[P => C, A],
       gen: LabelledGeneric.Aux[C, T],
       removeAll: RemoveAll.Aux[T, P, (P, R)],
@@ -102,8 +101,7 @@ object semiauto {
       config: Configuration
     ): Decoder[A] = ConfiguredDecoder.decodeIncompleteCaseClass[A, P, C, D, T, R]
 
-    final def patch[D <: HList, R <: HList, O <: HList](
-      implicit
+    final def patch[D <: HList, R <: HList, O <: HList](implicit
       gen: LabelledGeneric.Aux[A, R],
       patch: PatchWithOptions.Aux[R, O],
       decode: ReprDecoder[O],

@@ -14,8 +14,7 @@ Some possible causes for this:
 abstract class UnwrappedDecoder[A] extends Decoder[A]
 
 object UnwrappedDecoder {
-  implicit def decodeUnwrapped[A, R](
-    implicit
+  implicit def decodeUnwrapped[A, R](implicit
     gen: Lazy[Generic.Aux[A, R :: HNil]],
     decodeR: Decoder[R]
   ): UnwrappedDecoder[A] = new UnwrappedDecoder[A] {

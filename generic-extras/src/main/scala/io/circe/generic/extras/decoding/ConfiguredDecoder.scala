@@ -149,8 +149,7 @@ object ConfiguredDecoder extends IncompleteConfiguredDecoders {
         .map(gen.from)
   }
 
-  implicit def decodeCaseClass[A, R <: HList, D <: HList, F <: HList, K <: HList](
-    implicit
+  implicit def decodeCaseClass[A, R <: HList, D <: HList, F <: HList, K <: HList](implicit
     gen: LabelledGeneric.Aux[A, R],
     decodeR: Lazy[ReprDecoder[R]],
     defaults: Default.AsRecord.Aux[A, D],
@@ -181,8 +180,7 @@ object ConfiguredDecoder extends IncompleteConfiguredDecoders {
     }
   }
 
-  implicit def decodeAdt[A, R <: Coproduct](
-    implicit
+  implicit def decodeAdt[A, R <: Coproduct](implicit
     gen: LabelledGeneric.Aux[A, R],
     decodeR: Lazy[ReprDecoder[R]],
     config: Configuration
