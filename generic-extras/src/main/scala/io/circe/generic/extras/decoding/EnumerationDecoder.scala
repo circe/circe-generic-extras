@@ -20,8 +20,7 @@ object EnumerationDecoder {
     def apply(c: HCursor): Decoder.Result[CNil] = Left(DecodingFailure("Enumeration", c.history))
   }
 
-  implicit def decodeEnumerationCCons[K <: Symbol, V, R <: Coproduct](
-    implicit
+  implicit def decodeEnumerationCCons[K <: Symbol, V, R <: Coproduct](implicit
     witK: Witness.Aux[K],
     gen: LabelledGeneric.Aux[V, HNil],
     decodeR: EnumerationDecoder[R],
@@ -40,8 +39,7 @@ object EnumerationDecoder {
       }
   }
 
-  implicit def decodeEnumeration[A, Repr <: Coproduct](
-    implicit
+  implicit def decodeEnumeration[A, Repr <: Coproduct](implicit
     gen: LabelledGeneric.Aux[A, Repr],
     decodeR: EnumerationDecoder[Repr]
   ): EnumerationDecoder[A] =
