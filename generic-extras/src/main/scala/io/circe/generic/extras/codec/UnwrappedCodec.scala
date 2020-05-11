@@ -14,8 +14,7 @@ Some possible causes for this:
 abstract class UnwrappedCodec[A] extends Codec[A]
 
 object UnwrappedCodec {
-  implicit def codecForUnwrapped[A, R](
-    implicit
+  implicit def codecForUnwrapped[A, R](implicit
     gen: Lazy[Generic.Aux[A, R :: HNil]],
     decodeR: Decoder[R],
     encodeR: Encoder[R]

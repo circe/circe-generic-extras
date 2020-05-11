@@ -21,8 +21,7 @@ Some possible causes for this:
 abstract class ConfiguredAsObjectCodec[A] extends DerivedAsObjectCodec[A]
 
 object ConfiguredAsObjectCodec {
-  implicit def codecForCaseClass[A, R <: HList, D <: HList, F <: HList, K <: HList](
-    implicit
+  implicit def codecForCaseClass[A, R <: HList, D <: HList, F <: HList, K <: HList](implicit
     gen: LabelledGeneric.Aux[A, R],
     codec: Lazy[ReprAsObjectCodec[R]],
     defaults: Default.AsRecord.Aux[A, D],
@@ -55,8 +54,7 @@ object ConfiguredAsObjectCodec {
     final def encodeObject(a: A): JsonObject = encodeA.encodeObject(a)
   }
 
-  implicit def codecForAdt[A, R <: Coproduct](
-    implicit
+  implicit def codecForAdt[A, R <: Coproduct](implicit
     gen: LabelledGeneric.Aux[A, R],
     codec: Lazy[ReprAsObjectCodec[R]],
     config: Configuration
