@@ -9,6 +9,7 @@ import org.scalacheck.{ Arbitrary, Gen }
 import org.scalacheck.Arbitrary.arbitrary
 import shapeless.Witness
 import shapeless.labelled.{ FieldType, field }
+import org.scalacheck.Prop.forAll
 
 import examples._
 
@@ -53,30 +54,32 @@ object ConfiguredSemiautoDerivedSuite {
 class ConfiguredSemiautoDerivedSuite extends CirceSuite {
   import ConfiguredSemiautoDerivedSuite._
 
-  checkLaws("Codec[ConfigExampleBase]", CodecTests[ConfigExampleBase].codec)
-  checkLaws(
+  checkAll("Codec[ConfigExampleBase]", CodecTests[ConfigExampleBase].codec)
+  checkAll(
     "Codec[ConfigExampleBase] via Codec",
     CodecTests[ConfigExampleBase](codecForConfigExampleBase, codecForConfigExampleBase).codec
   )
-  checkLaws(
+  checkAll(
     "Codec[ConfigExampleBase] via Decoder and Codec",
     CodecTests[ConfigExampleBase](implicitly, codecForConfigExampleBase).codec
   )
-  checkLaws(
+  checkAll(
     "Codec[ConfigExampleBase] via Encoder and Codec",
     CodecTests[ConfigExampleBase](codecForConfigExampleBase, implicitly).codec
   )
 
-  "Semi-automatic derivation" should "support configuration" in forAll { (f: String, b: Double) =>
-    val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
-    val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
-    val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "b": $b}"""
+  property("Semi-automatic derivation should support configuration") {
+    forAll { (f: String, b: Double) =>
+      val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
+      val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
+      val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "b": $b}"""
 
-    assert(Encoder[ConfigExampleBase].apply(foo) === expected)
-    assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
+      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+    }
   }
 
-  it should "call field modification times equal to field count" in {
+  test("it should call field modification times equal to field count") {
     var transformMemberNamesCallCount, transformConstructorCallCount = 0
     implicit val customConfig: Configuration =
       Configuration.default.copy(
@@ -108,37 +111,40 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
     }
   }
 
-  it should "support configured strict decoding" in forAll { (f: String, b: Double) =>
-    implicit val customConfig: Configuration =
-      Configuration.default.withSnakeCaseMemberNames.withDefaults
-        .withDiscriminator("type_field")
-        .withSnakeCaseConstructorNames
-        .withStrictDecoding
+  property("it should support configured strict decoding") {
+    forAll { (f: String, b: Double) =>
+      implicit val customConfig: Configuration =
+        Configuration.default.withSnakeCaseMemberNames.withDefaults
+          .withDiscriminator("type_field")
+          .withSnakeCaseConstructorNames
+          .withStrictDecoding
 
-    implicit val decodeConfigExampleBase: Decoder[ConfigExampleBase] = deriveConfiguredDecoder
+      implicit val decodeConfigExampleBase: Decoder[ConfigExampleBase] = deriveConfiguredDecoder
 
-    val json =
-      json"""
+      val json =
+        json"""
             {"type_field": "config_example_foo", "this_is_a_field": $f, "b": $b, "stowaway_field": "I should not be here"}
         """
 
-    val expectedError =
-      DecodingFailure("Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, type_field", Nil)
+      val expectedError =
+        DecodingFailure("Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, type_field", Nil)
 
-    assert(Decoder[ConfigExampleBase].decodeJson(json) === Left(expectedError))
+      assert(Decoder[ConfigExampleBase].decodeJson(json) === Left(expectedError))
+    }
   }
 
-  it should "support configured strict decoding with decodeStrict" in forAll { (f: String, b: Double) =>
-    implicit val customConfig: Configuration =
-      Configuration.default.withSnakeCaseMemberNames.withDefaults
-        .withDiscriminator("type_field")
-        .withSnakeCaseConstructorNames
-        .withStrictDecoding
+  property("it should support configured strict decoding with decodeStrict") {
+    forAll { (f: String, b: Double) =>
+      implicit val customConfig: Configuration =
+        Configuration.default.withSnakeCaseMemberNames.withDefaults
+          .withDiscriminator("type_field")
+          .withSnakeCaseConstructorNames
+          .withStrictDecoding
 
-    implicit val decodeConfigExampleFoo: ExtrasDecoder[ConfigExampleFoo] = deriveExtrasDecoder
+      implicit val decodeConfigExampleFoo: ExtrasDecoder[ConfigExampleFoo] = deriveExtrasDecoder
 
-    val json =
-      json"""
+      val json =
+        json"""
             {
               "type_field": "config_example_foo",
               "this_is_a_field": $f,
@@ -148,22 +154,23 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
             }
         """
 
-    val expectedError =
-      DecodingFailure(
-        "Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, type_field",
-        Nil
-      )
-    val expectedExtraneous = List("stowaway_field", "also_bad_but_null_valued")
+      val expectedError =
+        DecodingFailure(
+          "Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, type_field",
+          Nil
+        )
+      val expectedExtraneous = List("stowaway_field", "also_bad_but_null_valued")
 
-    assert(
-      implicitly[ExtrasDecoder[ConfigExampleFoo]].decodeStrict(json.hcursor) === Left(
-        (expectedError, expectedExtraneous)
+      assert(
+        implicitly[ExtrasDecoder[ConfigExampleFoo]].decodeStrict(json.hcursor) === Left(
+          (expectedError, expectedExtraneous)
+        )
       )
-    )
+    }
   }
 
-  it should "support configured strict decoding with decodeStrict on a configured codec" in forAll {
-    (f: String, b: Double) =>
+  property("it should support configured strict decoding with decodeStrict on a configured codec") {
+    forAll { (f: String, b: Double) =>
       implicit val customConfig: Configuration =
         Configuration.default.withSnakeCaseMemberNames.withDefaults
           .withDiscriminator("type_field")
@@ -195,21 +202,24 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
           (expectedError, expectedExtraneous)
         )
       )
+    }
   }
 
-  "Decoder[Int => Qux[String]]" should "decode partial JSON representations" in forAll { (i: Int, s: String, j: Int) =>
-    val result = Json
-      .obj(
-        "a" -> Json.fromString(s),
-        "j" -> Json.fromInt(j)
-      )
-      .as[Int => Qux[String]]
-      .map(_(i))
+  property("Decoder[Int => Qux[String]] should decode partial JSON representations") {
+    forAll { (i: Int, s: String, j: Int) =>
+      val result = Json
+        .obj(
+          "a" -> Json.fromString(s),
+          "j" -> Json.fromInt(j)
+        )
+        .as[Int => Qux[String]]
+        .map(_(i))
 
-    assert(result === Right(Qux(i, s, j)))
+      assert(result === Right(Qux(i, s, j)))
+    }
   }
 
-  "Decoder[FieldType[Witness.`'j`.T, Int] => Qux[String]]" should "decode partial JSON representations" in {
+  property("Decoder[FieldType[Witness.`'j`.T, Int] => Qux[String]] should decode partial JSON representations") {
     forAll { (i: Int, s: String, j: Int) =>
       val result = Json
         .obj(
@@ -225,7 +235,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
     }
   }
 
-  "Decoder[Qux[String] => Qux[String]]" should "decode patch JSON representations" in {
+  property("Decoder[Qux[String] => Qux[String]] should decode patch JSON representations") {
     forAll { (q: Qux[String], i: Option[Int], a: Option[String], j: Option[Int]) =>
       val json = Json.obj(
         "i" -> Encoder[Option[Int]].apply(i),
@@ -239,10 +249,12 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
     }
   }
 
-  "A generically derived codec for an empty case class" should "not accept non-objects" in forAll { (j: Json) =>
-    case class EmptyCc()
+  property("A generically derived codec for an empty case class should not accept non-objects") {
+    forAll { (j: Json) =>
+      case class EmptyCc()
 
-    assert(deriveConfiguredDecoder[EmptyCc].decodeJson(j).isRight == j.isObject)
-    assert(deriveConfiguredCodec[EmptyCc].decodeJson(j).isRight == j.isObject)
+      assert(deriveConfiguredDecoder[EmptyCc].decodeJson(j).isRight == j.isObject)
+      assert(deriveConfiguredCodec[EmptyCc].decodeJson(j).isRight == j.isObject)
+    }
   }
 }
