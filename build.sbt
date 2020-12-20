@@ -87,10 +87,11 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
       "io.circe" %%% "circe-testing" % circeVersion % Test,
       "org.scalameta" %%% "munit" % munitVersion % Test,
       "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
-      "org.typelevel" %% "discipline-munit" % disciplineMunitVersion % Test,
+      "org.typelevel" %%% "discipline-munit" % disciplineMunitVersion % Test,
       "org.typelevel" %% "jawn-parser" % jawnVersion % Test
     ),
     testFrameworks := List(new TestFramework("munit.Framework")), // Override setting so Scalatest is disabled
+    scalaJSLinkerConfig in Test ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     ghpagesNoJekyll := true,
     docMappingsApiDir := "api",
     addMappingsToSiteDir(mappings in (Compile, packageDoc), docMappingsApiDir)
