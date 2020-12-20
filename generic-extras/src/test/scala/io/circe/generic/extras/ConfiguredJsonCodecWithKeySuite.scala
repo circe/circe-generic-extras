@@ -6,6 +6,7 @@ import io.circe.literal._
 import io.circe.testing.CodecTests
 import org.scalacheck.{ Arbitrary, Gen }
 import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Prop.forAll
 
 object ConfiguredJsonCodecWithKeySuite {
   implicit val customConfig: Configuration =
@@ -36,14 +37,16 @@ object ConfiguredJsonCodecWithKeySuite {
 class ConfiguredJsonCodecWithKeySuite extends CirceSuite {
   import ConfiguredJsonCodecWithKeySuite._
 
-  checkLaws("Codec[ConfigExampleBase]", CodecTests[ConfigExampleBase].codec)
+  checkAll("Codec[ConfigExampleBase]", CodecTests[ConfigExampleBase].codec)
 
-  "ConfiguredJsonCodec" should "support key annotation and configuration" in forAll { (f: String, b: Double) =>
-    val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
-    val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "myField": $b}"""
-    val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "myField": $b}"""
+  property("ConfiguredJsonCodec should support key annotation and configuration") {
+    forAll { (f: String, b: Double) =>
+      val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
+      val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "myField": $b}"""
+      val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "myField": $b}"""
 
-    assert(Encoder[ConfigExampleBase].apply(foo) === expected)
-    assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
+      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+    }
   }
 }

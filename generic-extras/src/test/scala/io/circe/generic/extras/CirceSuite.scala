@@ -3,17 +3,16 @@ package io.circe.generic.extras
 import cats.instances._
 import cats.syntax._
 import io.circe.testing.{ ArbitraryInstances, EqInstances }
-import org.scalatest.flatspec.AnyFlatSpec
-import org.scalatestplus.scalacheck.{ Checkers, ScalaCheckDrivenPropertyChecks }
 import org.typelevel.discipline.Laws
+
 import scala.language.implicitConversions
+import munit.{ DisciplineSuite, Location, ScalaCheckSuite }
 
 /**
  * An opinionated stack of traits to improve consistency and reduce boilerplate in circe tests.
  */
 trait CirceSuite
-    extends AnyFlatSpec
-    with ScalaCheckDrivenPropertyChecks
+    extends DisciplineSuite
     with AllInstances
     with AllInstancesBinCompat0
     with AllInstancesBinCompat1
@@ -33,13 +32,5 @@ trait CirceSuite
     with ArbitraryInstances
     with EqInstances {
 
-  override def convertToEqualizer[T](left: T): Equalizer[T] =
-    sys.error("Intentionally ambiguous implicit for Equalizer")
-
   implicit def prioritizedCatsSyntaxEither[A, B](eab: Either[A, B]): EitherOps[A, B] = new EitherOps(eab)
-
-  def checkLaws(name: String, ruleSet: Laws#RuleSet): Unit = ruleSet.all.properties.zipWithIndex.foreach {
-    case ((id, prop), 0) => name should s"obey $id" in Checkers.check(prop)
-    case ((id, prop), _) => it should s"obey $id" in Checkers.check(prop)
-  }
 }
