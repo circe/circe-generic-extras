@@ -2,7 +2,7 @@ package io.circe.generic.extras.codec
 
 import io.circe.{ Decoder, Encoder, HCursor, JsonObject }
 import io.circe.generic.codec.DerivedAsObjectCodec
-import io.circe.generic.extras.{ Configuration, JsonKey }
+import io.circe.generic.extras.{ Configuration, ExtrasDecoder, JsonKey }
 import io.circe.generic.extras.decoding.ConfiguredDecoder
 import io.circe.generic.extras.encoding.ConfiguredAsObjectEncoder
 import io.circe.generic.extras.util.RecordToMap
@@ -18,7 +18,7 @@ Some possible causes for this:
 - some of ${A}'s members don't have codecs of their own
 - missing implicit Configuration"""
 )
-abstract class ConfiguredAsObjectCodec[A] extends DerivedAsObjectCodec[A]
+abstract class ConfiguredAsObjectCodec[A] extends DerivedAsObjectCodec[A] with ExtrasDecoder[A]
 
 object ConfiguredAsObjectCodec {
   implicit def codecForCaseClass[A, R <: HList, D <: HList, F <: HList, K <: HList](implicit
@@ -32,7 +32,7 @@ object ConfiguredAsObjectCodec {
     keys: Annotations.Aux[JsonKey, A, K],
     keysToList: ToTraversable.Aux[K, List, Option[JsonKey]]
   ): ConfiguredAsObjectCodec[A] = new ConfiguredAsObjectCodec[A] {
-    private[this] val decodeA: Decoder[A] =
+    private[this] val decodeA: ConfiguredDecoder[A] =
       ConfiguredDecoder.decodeCaseClass[A, R, D, F, K](
         gen,
         codec,
@@ -52,6 +52,9 @@ object ConfiguredAsObjectCodec {
     final override def decodeAccumulating(c: HCursor): Decoder.AccumulatingResult[A] = decodeA.decodeAccumulating(c)
 
     final def encodeObject(a: A): JsonObject = encodeA.encodeObject(a)
+
+    override final def isStrict: Boolean = decodeA.isStrict
+    override final def decodeStrict(c: HCursor): ConfiguredDecoder.StrictResult[A] = decodeA.decodeStrict(c)
   }
 
   implicit def codecForAdt[A, R <: Coproduct](implicit
