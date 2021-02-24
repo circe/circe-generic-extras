@@ -9,6 +9,7 @@ import io.circe.literal._
 import io.circe.testing.CodecTests
 import org.scalacheck.{ Arbitrary, Gen }
 import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Prop.forAll
 
 import examples._
 
@@ -49,11 +50,11 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
   {
     implicit val config: Configuration = Configuration.default
-    checkLaws("Codec[ConfigExampleBase] (default configuration)", CodecTests[ConfigExampleBase].codec)
+    checkAll("Codec[ConfigExampleBase] (default configuration)", CodecTests[ConfigExampleBase].codec)
   }
 
-  "Configuration#transformMemberNames" should "support member name transformation using snake_case" in forAll {
-    foo: ConfigExampleFoo =>
+  property("Configuration#transformMemberNames should support member name transformation using snake_case") {
+    forAll { foo: ConfigExampleFoo =>
       implicit val snakeCaseConfig: Configuration = Configuration.default.withSnakeCaseMemberNames
 
       import foo._
@@ -61,10 +62,11 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assert(Encoder[ConfigExampleFoo].apply(foo) === json)
       assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+    }
   }
 
-  "Configuration#transformMemberNames" should "support member name transformation using SCREAMING_SNAKE_CASE" in forAll {
-    foo: ConfigExampleFoo =>
+  property("Configuration#transformMemberNames should support member name transformation using SCREAMING_SNAKE_CASE") {
+    forAll { foo: ConfigExampleFoo =>
       implicit val snakeCaseConfig: Configuration = Configuration.default.withScreamingSnakeCaseMemberNames
 
       import foo._
@@ -72,10 +74,11 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assert(Encoder[ConfigExampleFoo].apply(foo) === json)
       assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+    }
   }
 
-  "Configuration#transformMemberNames" should "support member name transformation using kebab-case" in forAll {
-    foo: ConfigExampleFoo =>
+  property("Configuration#transformMemberNames should support member name transformation using kebab-case") {
+    forAll { foo: ConfigExampleFoo =>
       implicit val kebabCaseConfig: Configuration = Configuration.default.withKebabCaseMemberNames
 
       import foo._
@@ -83,9 +86,10 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assert(Encoder[ConfigExampleFoo].apply(foo) === json)
       assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+    }
   }
 
-  "Configuration#useDefaults" should "support using default values during decoding" in {
+  property("Configuration#useDefaults should support using default values during decoding") {
     forAll { (f: String, b: Double) =>
       implicit val withDefaultsConfig: Configuration = Configuration.default.withDefaults
 
@@ -111,34 +115,34 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
     implicit val customConfig: Configuration = Configuration.default.withDefaults
 
-    "Option[T] without default" should "be None if null decoded" in {
+    test("Option[T] without default should be None if null decoded") {
       val json = json"""{ "a": null }"""
       assert(Decoder[FooNoDefault].decodeJson(json) === Right(FooNoDefault(None, "b")))
     }
 
-    "Option[T] without default" should "be None if missing key decoded" in {
+    test("Option[T] without default should be None if missing key decoded") {
       val json = json"""{}"""
       assert(Decoder[FooNoDefault].decodeJson(json) === Right(FooNoDefault(None, "b")))
     }
 
-    "Option[T] with default" should "be None if null decoded" in {
+    test("Option[T] with default should be None if null decoded") {
       val json = json"""{ "a": null }"""
       assert(Decoder[FooWithDefault].decodeJson(json) === Right(FooWithDefault(None, "b")))
     }
 
-    "Option[T] with default" should "be default value if missing key decoded" in {
+    test("Option[T] with default should be default value if missing key decoded") {
       val json = json"""{}"""
       assert(Decoder[FooWithDefault].decodeJson(json) === Right(FooWithDefault(Some(0), "b")))
       assert(Decoder[FooWithDefault].decodeAccumulating(json.hcursor) === Validated.valid(FooWithDefault(Some(0), "b")))
     }
 
-    "Value with default" should "be default value if value is null" in {
+    test("Value with default should be default value if value is null") {
       val json = json"""{"b": null}"""
       assert(Decoder[FooWithDefault].decodeJson(json) === Right(FooWithDefault(Some(0), "b")))
       assert(Decoder[FooWithDefault].decodeAccumulating(json.hcursor) === Validated.valid(FooWithDefault(Some(0), "b")))
     }
 
-    "Option[T] with default" should "fail to decode if type in json is not correct" in {
+    test("Option[T] with default should fail to decode if type in json is not correct") {
       val json = json"""{"a": "NotAnInt"}"""
       assert(Decoder[FooWithDefault].decodeJson(json) === Left(DecodingFailure("Int", List(DownField("a")))))
       assert(
@@ -147,7 +151,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       )
     }
 
-    "Field with default" should "fail to decode it type in json is not correct" in {
+    test("Field with default should fail to decode it type in json is not correct") {
       val json = json"""{"b": 1}"""
       assert(Decoder[FooWithDefault].decodeJson(json) === Left(DecodingFailure("String", List(DownField("b")))))
       assert(
@@ -158,7 +162,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
     }
   }
 
-  "Configuration#discriminator" should "support a field indicating constructor" in {
+  property("Configuration#discriminator should support a field indicating constructor") {
     forAll { foo: ConfigExampleFoo =>
       implicit val withDefaultsConfig: Configuration = Configuration.default.withDiscriminator("type")
 
@@ -170,8 +174,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
     }
   }
 
-  "Configuration#transformConstructorNames" should "support constructor name transformation with snake_case" in forAll {
-    foo: ConfigExampleFoo =>
+  property("Configuration#transformConstructorNames should support constructor name transformation with snake_case") {
+    forAll { foo: ConfigExampleFoo =>
       implicit val snakeCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withSnakeCaseConstructorNames
 
@@ -180,10 +184,13 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assert(Encoder[ConfigExampleBase].apply(foo) === json)
       assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+    }
   }
 
-  "Configuration#transformConstructorNames" should "support constructor name transformation with SCREAMING_SNAKE_CASE" in forAll {
-    foo: ConfigExampleFoo =>
+  property(
+    "Configuration#transformConstructorNames should support constructor name transformation with SCREAMING_SNAKE_CASE"
+  ) {
+    forAll { foo: ConfigExampleFoo =>
       implicit val snakeCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withScreamingSnakeCaseConstructorNames
 
@@ -192,10 +199,11 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assert(Encoder[ConfigExampleBase].apply(foo) === json)
       assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+    }
   }
 
-  "Configuration#transformConstructorNames" should "support constructor name transformation with kebab-case" in forAll {
-    foo: ConfigExampleFoo =>
+  property("Configuration#transformConstructorNames should support constructor name transformation with kebab-case") {
+    forAll { foo: ConfigExampleFoo =>
       implicit val kebabCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withKebabCaseConstructorNames
 
@@ -204,29 +212,32 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assert(Encoder[ConfigExampleBase].apply(foo) === json)
       assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+    }
   }
 
-  "Configuration options" should "work together" in forAll { (f: String, b: Double) =>
-    implicit val customConfig: Configuration =
-      Configuration.default.withSnakeCaseMemberNames.withDefaults.withDiscriminator("type")
+  property("Configuration options should work together") {
+    forAll { (f: String, b: Double) =>
+      implicit val customConfig: Configuration =
+        Configuration.default.withSnakeCaseMemberNames.withDefaults.withDiscriminator("type")
 
-    val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
-    val json = json"""{ "type": "ConfigExampleFoo", "this_is_a_field": $f, "b": $b}"""
-    val expected = json"""{ "type": "ConfigExampleFoo", "this_is_a_field": $f, "a": 0, "b": $b}"""
+      val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
+      val json = json"""{ "type": "ConfigExampleFoo", "this_is_a_field": $f, "b": $b}"""
+      val expected = json"""{ "type": "ConfigExampleFoo", "this_is_a_field": $f, "a": 0, "b": $b}"""
 
-    assert(Encoder[ConfigExampleBase].apply(foo) === expected)
-    assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
+      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+    }
   }
 
   {
     import defaults._
-    checkLaws("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].codec)
-    checkLaws("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].codec)
-    checkLaws("Codec[Qux[Int]]", CodecTests[Qux[Int]].codec)
-    checkLaws("Codec[Foo]", CodecTests[Foo].codec)
+    checkAll("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].codec)
+    checkAll("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].codec)
+    checkAll("Codec[Qux[Int]]", CodecTests[Qux[Int]].codec)
+    checkAll("Codec[Foo]", CodecTests[Foo].codec)
 
-    "Decoder[Int => Qux[String]]" should "decode partial JSON representations" in forAll {
-      (i: Int, s: String, j: Int) =>
+    property("Decoder[Int => Qux[String]] should decode partial JSON representations") {
+      forAll { (i: Int, s: String, j: Int) =>
         val result = Json
           .obj(
             "a" -> Json.fromString(s),
@@ -236,6 +247,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
           .map(_(i))
 
         assert(result === Right(Qux(i, s, j)))
+      }
     }
   }
 }
