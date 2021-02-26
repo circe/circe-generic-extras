@@ -1,8 +1,8 @@
 package io.circe.generic.extras.decoding
 
-import io.circe.{ Decoder, HCursor }
+import io.circe.{ Decoder, DecodingFailure, HCursor }
 import io.circe.generic.decoding.DerivedDecoder
-import io.circe.generic.extras.{ Configuration, JsonKey }
+import io.circe.generic.extras.{ Configuration, ExtrasDecoder, JsonKey }
 import io.circe.generic.extras.util.RecordToMap
 import java.util.concurrent.ConcurrentHashMap
 import scala.annotation.implicitNotFound
@@ -14,11 +14,11 @@ import shapeless.ops.record.Keys
 @implicitNotFound(
   """Could not find ConfiguredDecoder for type ${A}.
 Some possible causes for this:
-- ${A} isn't a case class or sealed trat
+- ${A} isn't a case class or sealed trait
 - some of ${A}'s members don't have codecs of their own
 - missing implicit Configuration"""
 )
-abstract class ConfiguredDecoder[A](config: Configuration) extends DerivedDecoder[A] {
+abstract class ConfiguredDecoder[A](config: Configuration) extends DerivedDecoder[A] with ExtrasDecoder[A] {
   private[this] val constructorNameCache: ConcurrentHashMap[String, String] =
     new ConcurrentHashMap[String, String]()
 
@@ -36,6 +36,12 @@ abstract class ConfiguredDecoder[A](config: Configuration) extends DerivedDecode
 }
 
 object ConfiguredDecoder extends IncompleteConfiguredDecoders {
+
+  /**
+   * Includes a list of extraneous fields on failure if the decoder is configured to be strict.
+   */
+  type StrictResult[A] = Either[(DecodingFailure, List[String]), A]
+
   private[this] abstract class CaseClassConfiguredDecoder[A, R <: HList](
     config: Configuration,
     keyAnnotationMap: Map[String, String]
@@ -101,26 +107,27 @@ object ConfiguredDecoder extends IncompleteConfiguredDecoders {
       keyNames.map(memberNameTransformer) ++ config.discriminator.map(constructorNameTransformer)
 
     private[this] val expectedFieldsStr = expectedFields.mkString(", ")
+    private[this] val expectedFieldsSet = expectedFields.toSet
+
+    private[this] def extraneousFields(c: HCursor): List[String] =
+      c.keys.map(_.toList.filterNot(expectedFieldsSet)).getOrElse(Nil)
 
     private[this] val wrapped: Decoder[A] =
-      new NonStrictCaseClassConfiguredDecoder[A, R](gen, decodeR, config, defaultMap, keyAnnotationMap).validate {
-        cursor: HCursor =>
-          val maybeUnexpectedErrors = for {
-            json <- cursor.focus
-            jsonKeys <- json.hcursor.keys
-            unexpected = jsonKeys.toSet -- expectedFields
-          } yield {
-            unexpected.toList.map { unexpectedField =>
-              s"Unexpected field: [$unexpectedField]; valid fields: $expectedFieldsStr"
-            }
-          }
-
-          maybeUnexpectedErrors.getOrElse(Nil)
-      }
+      new NonStrictCaseClassConfiguredDecoder[A, R](gen, decodeR, config, defaultMap, keyAnnotationMap).validate(c =>
+        extraneousFields(c).map { unexpectedField =>
+          s"Unexpected field: [$unexpectedField]; valid fields: $expectedFieldsStr"
+        }
+      )
 
     final def apply(c: HCursor): Decoder.Result[A] = wrapped.apply(c)
 
     override final def decodeAccumulating(c: HCursor): Decoder.AccumulatingResult[A] = wrapped.decodeAccumulating(c)
+
+    override final def isStrict: Boolean = true
+    override final def decodeStrict(c: HCursor): ConfiguredDecoder.StrictResult[A] = apply(c) match {
+      case Right(value) => Right(value)
+      case Left(df)     => Left((df, extraneousFields(c)))
+    }
   }
 
   private[this] class AdtConfiguredDecoder[A, R <: Coproduct](
