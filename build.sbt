@@ -62,7 +62,8 @@ val baseSettings = Seq(
         compilerPlugin(("org.scalamacros" % "paradise" % paradiseVersion).cross(CrossVersion.patch))
       )
     } else Nil
-  )
+  ),
+  coverageEnabled := !priorTo2_13(scalaVersion.value)
 )
 
 val allSettings = baseSettings ++ publishSettings
@@ -93,6 +94,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
     addMappingsToSiteDir(mappings in (Compile, packageDoc), docMappingsApiDir)
   )
   .jvmSettings(fork in Test := true)
+  .jsSettings(coverageEnabled := false)
 
 lazy val genericExtrasJVM = genericExtras.jvm
 lazy val genericExtrasJS = genericExtras.js
