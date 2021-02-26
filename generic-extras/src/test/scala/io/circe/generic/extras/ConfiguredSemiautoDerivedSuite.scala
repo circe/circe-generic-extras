@@ -3,7 +3,6 @@ package io.circe.generic.extras
 import cats.kernel.Eq
 import io.circe.{ Codec, Decoder, DecodingFailure, Encoder, Json }
 import io.circe.generic.extras.semiauto._
-import io.circe.generic.extras.decoding.ConfiguredDecoder
 import io.circe.literal._
 import io.circe.testing.CodecTests
 import org.scalacheck.{ Arbitrary, Gen }
