@@ -14,7 +14,7 @@ val compilerOptions = Seq(
   "-Ywarn-numeric-widen"
 )
 
-val scala212 = "2.12.13"
+val scala212 = "2.13.5"
 val scala213 = "2.13.3"
 
 val circeVersion = "0.13.0"
