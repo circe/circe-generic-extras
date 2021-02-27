@@ -49,6 +49,13 @@ object semiauto {
   final def deriveConfiguredCodec[A](implicit codec: Lazy[ConfiguredAsObjectCodec[A]]): Codec.AsObject[A] =
     codec.value
 
+  final def deriveExtrasDecoder[A](implicit decode: Lazy[ConfiguredDecoder[A]]): ExtrasDecoder[A] =
+    decode.value
+  final def deriveExtrasEncoder[A](implicit encode: Lazy[ConfiguredAsObjectEncoder[A]]): Encoder.AsObject[A] =
+    encode.value
+  final def deriveExtrasCodec[A](implicit codec: Lazy[ConfiguredAsObjectCodec[A]]): ExtrasAsObjectCodec[A] =
+    codec.value
+
   final def deriveConfiguredFor[A]: DerivationHelper[A] = new DerivationHelper[A]
 
   /**

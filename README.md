@@ -1,6 +1,6 @@
 # circe-generic-extras
 
-[![Build status](https://img.shields.io/travis/circe/circe-generic-extras/master.svg)](https://travis-ci.org/circe/circe-generic-extras)
+[![Build](https://github.com/circe/circe-generic-extras/workflows/Continuous%20Integration/badge.svg)](https://github.com/circe/circe-generic-extras/actions)
 [![Coverage status](https://img.shields.io/codecov/c/github/circe/circe-generic-extras/master.svg)](https://codecov.io/github/circe/circe-generic-extras)
 [![Gitter](https://img.shields.io/badge/gitter-join%20chat-green.svg)](https://gitter.im/circe/circe)
 [![Maven Central](https://img.shields.io/maven-central/v/io.circe/circe-generic-extras_2.12.svg)](https://maven-badges.herokuapp.com/maven-central/io.circe/circe-generic-extras_2.12)

@@ -128,6 +128,75 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
     assert(Decoder[ConfigExampleBase].decodeJson(json) === Left(expectedError))
   }
 
+  it should "support configured strict decoding with decodeStrict" in forAll { (f: String, b: Double) =>
+    implicit val customConfig: Configuration =
+      Configuration.default.withSnakeCaseMemberNames.withDefaults
+        .withDiscriminator("type_field")
+        .withSnakeCaseConstructorNames
+        .withStrictDecoding
+
+    implicit val decodeConfigExampleFoo: ExtrasDecoder[ConfigExampleFoo] = deriveExtrasDecoder
+
+    val json =
+      json"""
+            {
+              "type_field": "config_example_foo",
+              "this_is_a_field": $f,
+              "stowaway_field": "I should not be here",
+              "b": $b,
+              "also_bad_but_null_valued": null
+            }
+        """
+
+    val expectedError =
+      DecodingFailure(
+        "Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, type_field",
+        Nil
+      )
+    val expectedExtraneous = List("stowaway_field", "also_bad_but_null_valued")
+
+    assert(
+      implicitly[ExtrasDecoder[ConfigExampleFoo]].decodeStrict(json.hcursor) === Left(
+        (expectedError, expectedExtraneous)
+      )
+    )
+  }
+
+  it should "support configured strict decoding with decodeStrict on a configured codec" in forAll {
+    (f: String, b: Double) =>
+      implicit val customConfig: Configuration =
+        Configuration.default.withSnakeCaseMemberNames.withDefaults
+          .withDiscriminator("type_field")
+          .withSnakeCaseConstructorNames
+          .withStrictDecoding
+
+      implicit val codecForConfigExampleFoo: ExtrasAsObjectCodec[ConfigExampleFoo] = deriveExtrasCodec
+
+      val json =
+        json"""
+            {
+              "type_field": "config_example_foo",
+              "this_is_a_field": $f,
+              "stowaway_field": "I should not be here",
+              "b": $b,
+              "also_bad_but_null_valued": null
+            }
+        """
+
+      val expectedError =
+        DecodingFailure(
+          "Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, type_field",
+          Nil
+        )
+      val expectedExtraneous = List("stowaway_field", "also_bad_but_null_valued")
+
+      assert(
+        implicitly[ExtrasAsObjectCodec[ConfigExampleFoo]].decodeStrict(json.hcursor) === Left(
+          (expectedError, expectedExtraneous)
+        )
+      )
+  }
+
   "Decoder[Int => Qux[String]]" should "decode partial JSON representations" in forAll { (i: Int, s: String, j: Int) =>
     val result = Json
       .obj(
