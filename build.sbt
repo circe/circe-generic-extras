@@ -14,6 +14,9 @@ val compilerOptions = Seq(
   "-Ywarn-numeric-widen"
 )
 
+val scala212 = "2.12.13"
+val scala213 = "2.13.3"
+
 val circeVersion = "0.13.0"
 val paradiseVersion = "2.1.1"
 
@@ -28,6 +31,8 @@ def priorTo2_13(scalaVersion: String): Boolean =
     case Some((2, minor)) if minor < 13 => true
     case _                              => false
   }
+
+ThisBuild / crossScalaVersions := Seq(scala212, scala213)
 
 val baseSettings = Seq(
   scalacOptions ++= compilerOptions,
@@ -52,7 +57,6 @@ val baseSettings = Seq(
     _.filterNot(Set("-Ywarn-unused-import", "-Ywarn-unused:imports"))
   },
   coverageHighlighting := true,
-  (scalastyleSources in Compile) ++= (unmanagedSourceDirectories in Compile).value,
   libraryDependencies ++= Seq(
     scalaOrganization.value % "scala-compiler" % scalaVersion.value % Provided,
     scalaOrganization.value % "scala-reflect" % scalaVersion.value % Provided
@@ -152,3 +156,23 @@ credentials ++= (
     password
   )
 ).toSeq
+
+ThisBuild / githubWorkflowJavaVersions := Seq("adopt@1.8")
+// No auto-publish atm. Remove this line to generate publish stage
+ThisBuild / githubWorkflowPublishTargetBranches := Seq.empty
+ThisBuild / githubWorkflowBuild := Seq(
+  WorkflowStep.Sbt(
+    List("clean", "coverage", "genericExtras/test", "coverageReport", "scalafmtCheckAll"),
+    id = None,
+    name = Some("Test JVM")
+  ),
+  WorkflowStep.Use(
+    UseRef.Public("codecov", "codecov-action", "e156083f13aff6830c92fc5faa23505779fbf649"), // v1.2.1
+    name = Some("Upload code coverage")
+  ),
+  WorkflowStep.Sbt(
+    List("genericExtrasJS/test"),
+    id = None,
+    name = Some("Test JS")
+  )
+)
