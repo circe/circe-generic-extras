@@ -67,7 +67,9 @@ val baseSettings = Seq(
       )
     } else Nil
   ),
-  coverageEnabled := !priorTo2_13(scalaVersion.value)
+  coverageEnabled := (
+    if (priorTo2_13(scalaVersion.value)) false else coverageEnabled.value
+  )
 )
 
 val allSettings = baseSettings ++ publishSettings
