@@ -9,3 +9,4 @@ target/
 .classpath
 tmp/
 docs/src/main/tut/contributing.md
+.bsp/
