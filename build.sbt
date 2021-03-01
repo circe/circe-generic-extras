@@ -15,7 +15,7 @@ val compilerOptions = Seq(
 )
 
 val scala212 = "2.12.13"
-val scala213 = "2.13.3"
+val scala213 = "2.13.5"
 
 val circeVersion = "0.13.0"
 val paradiseVersion = "2.1.1"
