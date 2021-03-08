@@ -21,7 +21,7 @@ val circeVersion = "0.13.0"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.0.0"
-val scalaTestVersion = "3.2.3"
+val scalaTestVersion = "3.2.6"
 val scalaTestPlusVersion = "3.2.2.0"
 
 val previousCirceGenericExtrasVersion = "0.13.0"
