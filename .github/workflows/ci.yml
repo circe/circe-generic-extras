@@ -9,9 +9,9 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: ['*']
+    branches: ['**']
   push:
-    branches: ['*']
+    branches: ['**']
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -22,7 +22,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.12.13, 2.13.6]
+        scala: [2.12.13, 2.13.5]
         java: [adopt@1.8]
     runs-on: ${{ matrix.os }}
     steps:
@@ -49,13 +49,13 @@ jobs:
           key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
 
       - name: Check that workflows are up to date
-        run: sbt ++${{ matrix.scala }} githubWorkflowCheck
+        run: sbt --client '++${{ matrix.scala }}; githubWorkflowCheck'
 
       - name: Test JVM
-        run: sbt ++${{ matrix.scala }} clean coverage genericExtras/test coverageReport scalafmtCheckAll
+        run: sbt --client '++${{ matrix.scala }}; clean; coverage; genericExtras/test; coverageReport; scalafmtCheckAll'
 
       - name: Upload code coverage
         uses: codecov/codecov-action@e156083f13aff6830c92fc5faa23505779fbf649
 
       - name: Test JS
-        run: sbt ++${{ matrix.scala }} genericExtrasJS/test
+        run: sbt --client '++${{ matrix.scala }}; genericExtrasJS/test'
