@@ -51,8 +51,8 @@ object ConfiguredAsObjectEncoder {
       fieldsToList(fields())
         .map(_.name)
         .zip(keyAnnotations)
-        .collect {
-          case (field, Some(keyAnnotation)) => (field, keyAnnotation.value)
+        .collect { case (field, Some(keyAnnotation)) =>
+          (field, keyAnnotation.value)
         }
         .toMap
 
