@@ -175,8 +175,8 @@ object ConfiguredDecoder extends IncompleteConfiguredDecoders {
     val keyAnnotationMap: Map[String, String] =
       keyNames
         .zip(keysToList(keys()))
-        .collect {
-          case (field, Some(keyAnnotation)) => (field, keyAnnotation.value)
+        .collect { case (field, Some(keyAnnotation)) =>
+          (field, keyAnnotation.value)
         }
         .toMap
 
