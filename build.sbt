@@ -17,11 +17,11 @@ val compilerOptions = Seq(
 val scala212 = "2.12.13"
 val scala213 = "2.13.6"
 
-val circeVersion = "0.13.0"
+val circeVersion = "0.14.0"
 val paradiseVersion = "2.1.1"
 
-val jawnVersion = "1.0.0"
-val scalaTestVersion = "3.2.3"
+val jawnVersion = "1.1.2"
+val scalaTestVersion = "3.2.9"
 val scalaTestPlusVersion = "3.2.2.0"
 
 val previousCirceGenericExtrasVersion = "0.13.0"
