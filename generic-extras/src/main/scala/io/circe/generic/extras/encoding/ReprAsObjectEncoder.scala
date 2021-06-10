@@ -12,7 +12,7 @@ import scala.language.experimental.macros
 @implicitNotFound(
   """Could not find ReprAsObjectEncoder for type ${A}.
 Some possible causes for this:
-- ${A} isn't a case class or sealed trat
+- ${A} isn't a case class or sealed trait
 - some of ${A}'s members don't have codecs of their own
 - missing implicit Configuration"""
 )
