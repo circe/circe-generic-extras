@@ -7,7 +7,7 @@ import shapeless.{ ::, Generic, HNil, Lazy }
 @implicitNotFound(
   """Could not find UnwrappedEncoder for type ${A}.
 Some possible causes for this:
-- ${A} isn't a case class or sealed trat
+- ${A} isn't a case class or sealed trait
 - some of ${A}'s members don't have codecs of their own
 - missing implicit Configuration"""
 )
