@@ -20,7 +20,7 @@ val scala213 = "2.13.6"
 val circeVersion = "0.14.1"
 val paradiseVersion = "2.1.1"
 
-val jawnVersion = "1.1.2"
+val jawnVersion = "1.2.0"
 val scalaTestVersion = "3.2.9"
 val scalaTestPlusVersion = "3.2.2.0"
 
