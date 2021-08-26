@@ -11,7 +11,8 @@ val compilerOptions = Seq(
   "-language:higherKinds",
   "-unchecked",
   "-Ywarn-dead-code",
-  "-Ywarn-numeric-widen"
+  "-Ywarn-numeric-widen",
+  "-Yrangepos"
 )
 
 val scala212 = "2.12.14"
@@ -21,8 +22,8 @@ val circeVersion = "0.14.1"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.2.0"
-val scalaTestVersion = "3.2.9"
-val scalaTestPlusVersion = "3.2.2.0"
+val munitVersion = "0.7.28"
+val disciplineMunitVersion = "1.0.9"
 
 val previousCirceGenericExtrasVersion = "0.13.0"
 
@@ -91,10 +92,13 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-literal" % circeVersion % Test,
       "io.circe" %%% "circe-testing" % circeVersion % Test,
-      "org.scalatest" %%% "scalatest" % scalaTestVersion % Test,
-      "org.scalatestplus" %%% "scalacheck-1-14" % scalaTestPlusVersion % Test,
+      "org.scalameta" %%% "munit" % munitVersion % Test,
+      "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
+      "org.typelevel" %%% "discipline-munit" % disciplineMunitVersion % Test,
       "org.typelevel" %% "jawn-parser" % jawnVersion % Test
     ),
+    testFrameworks := List(new TestFramework("munit.Framework")), // Override setting so Scalatest is disabled
+    scalaJSLinkerConfig in Test ~= (_.withModuleKind(ModuleKind.CommonJSModule)),
     ghpagesNoJekyll := true,
     docMappingsApiDir := "api",
     addMappingsToSiteDir(Compile / packageDoc / mappings, docMappingsApiDir)
