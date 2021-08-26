@@ -13,8 +13,8 @@ import shapeless.ops.record.RemoveAll
 /**
  * Semi-automatic codec derivation.
  *
- * This object provides helpers for creating [[io.circe.Decoder]] and [[io.circe.Encoder.AsObject]]
- * instances for case classes, "incomplete" case classes, sealed trait hierarchies, etc.
+ * This object provides helpers for creating [[io.circe.Decoder]] and [[io.circe.Encoder.AsObject]] instances for case
+ * classes, "incomplete" case classes, sealed trait hierarchies, etc.
  *
  * Typical usage will look like the following:
  *
@@ -61,24 +61,24 @@ object semiauto {
   /**
    * Derive a decoder for a sealed trait hierarchy made up of case objects.
    *
-   * Note that this differs from the usual derived decoder in that the leaves of
-   * the ADT are represented as JSON strings.
+   * Note that this differs from the usual derived decoder in that the leaves of the ADT are represented as JSON
+   * strings.
    */
   def deriveEnumerationDecoder[A](implicit decode: Lazy[EnumerationDecoder[A]]): Decoder[A] = decode.value
 
   /**
    * Derive an encoder for a sealed trait hierarchy made up of case objects.
    *
-   * Note that this differs from the usual derived encoder in that the leaves of
-   * the ADT are represented as JSON strings.
+   * Note that this differs from the usual derived encoder in that the leaves of the ADT are represented as JSON
+   * strings.
    */
   def deriveEnumerationEncoder[A](implicit encode: Lazy[EnumerationEncoder[A]]): Encoder[A] = encode.value
 
   /**
    * Derive a codec for a sealed trait hierarchy made up of case objects.
    *
-   * Note that this differs from the usual derived encoder in that the leaves of
-   * the ADT are represented as JSON strings.
+   * Note that this differs from the usual derived encoder in that the leaves of the ADT are represented as JSON
+   * strings.
    */
   def deriveEnumerationCodec[A](implicit codec: Lazy[EnumerationCodec[A]]): Codec[A] = codec.value
 

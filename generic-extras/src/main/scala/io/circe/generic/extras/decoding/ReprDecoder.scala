@@ -12,9 +12,8 @@ import shapeless.HNil
 /**
  * A decoder for a generic representation of a case class or ADT.
  *
- * Note that users typically will not work with instances of this class, which
- * contains unsafe methods (specifically the two `configuredDecode` methods,
- * which allow passing in an untyped map of default field values).
+ * Note that users typically will not work with instances of this class, which contains unsafe methods (specifically the
+ * two `configuredDecode` methods, which allow passing in an untyped map of default field values).
  */
 @implicitNotFound(
   """Could not find ReprDecoder for type ${A}.
