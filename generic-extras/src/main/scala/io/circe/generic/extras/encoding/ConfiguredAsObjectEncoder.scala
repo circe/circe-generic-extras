@@ -19,7 +19,7 @@ Some possible causes for this:
 )
 abstract class ConfiguredAsObjectEncoder[A](config: Configuration) extends DerivedAsObjectEncoder[A] {
   private[this] val constructorNameCache: ConcurrentHashMap[String, String] =
-    new ConcurrentHashMap[String, String]()
+    new ConcurrentHashMap[String, String]
 
   protected[this] def constructorNameTransformer(value: String): String = {
     val current = constructorNameCache.get(value)

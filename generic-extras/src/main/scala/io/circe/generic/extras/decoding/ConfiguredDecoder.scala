@@ -20,7 +20,7 @@ Some possible causes for this:
 )
 abstract class ConfiguredDecoder[A](config: Configuration) extends DerivedDecoder[A] with ExtrasDecoder[A] {
   private[this] val constructorNameCache: ConcurrentHashMap[String, String] =
-    new ConcurrentHashMap[String, String]()
+    new ConcurrentHashMap[String, String]
 
   protected[this] def constructorNameTransformer(value: String): String = {
     val current = constructorNameCache.get(value)
@@ -47,7 +47,7 @@ object ConfiguredDecoder extends IncompleteConfiguredDecoders {
     keyAnnotationMap: Map[String, String]
   ) extends ConfiguredDecoder[A](config) {
     private[this] val memberNameCache: ConcurrentHashMap[String, String] =
-      new ConcurrentHashMap[String, String]()
+      new ConcurrentHashMap[String, String]
 
     protected[this] def memberNameTransformer(value: String): String = {
       val current = memberNameCache.get(value)
