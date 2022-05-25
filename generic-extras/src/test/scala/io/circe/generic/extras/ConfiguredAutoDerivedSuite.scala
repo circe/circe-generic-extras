@@ -153,9 +153,15 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
     test("Field with default should fail to decode it type in json is not correct") {
       val json = json"""{"b": 1}"""
-      assertEquals(Decoder[FooWithDefault].decodeJson(json), Left(DecodingFailure(DecodingFailure.Reason.WrongTypeExpectation("string", Json.fromInt(1)), List(DownField("b")))))
       assertEquals(
-        Decoder[FooWithDefault].decodeAccumulating(json.hcursor), Validated.invalidNel(
+        Decoder[FooWithDefault].decodeJson(json),
+        Left(
+          DecodingFailure(DecodingFailure.Reason.WrongTypeExpectation("string", Json.fromInt(1)), List(DownField("b")))
+        )
+      )
+      assertEquals(
+        Decoder[FooWithDefault].decodeAccumulating(json.hcursor),
+        Validated.invalidNel(
           DecodingFailure(DecodingFailure.Reason.WrongTypeExpectation("string", Json.fromInt(1)), List(DownField("b")))
         )
       )

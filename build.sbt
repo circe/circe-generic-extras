@@ -27,7 +27,6 @@ val disciplineMunitVersion = "1.0.9"
 
 val previousCirceGenericExtrasVersions = Set("0.14.0", "0.14.1")
 
-
 def priorTo2_13(scalaVersion: String): Boolean =
   CrossVersion.partialVersion(scalaVersion) match {
     case Some((2, minor)) if minor < 13 => true
@@ -79,8 +78,12 @@ val allSettings = baseSettings ++ publishSettings
 val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
 
 lazy val root =
-  project.in(file(".")).settings(allSettings).settings(noPublishSettings).aggregate(genericExtrasJVM, genericExtrasJS).disablePlugins(MimaPlugin)
-
+  project
+    .in(file("."))
+    .settings(allSettings)
+    .settings(noPublishSettings)
+    .aggregate(genericExtrasJVM, genericExtrasJS)
+    .disablePlugins(MimaPlugin)
 
 lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
   .withoutSuffixFor(JVMPlatform)
