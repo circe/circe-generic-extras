@@ -18,14 +18,15 @@ val compilerOptions = Seq(
 val scala212 = "2.12.15"
 val scala213 = "2.13.7"
 
-val circeVersion = "0.14.1"
+val circeVersion = "0.14.2"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.3.2"
 val munitVersion = "0.7.29"
 val disciplineMunitVersion = "1.0.9"
 
-val previousCirceGenericExtrasVersion = "0.13.0"
+val previousCirceGenericExtrasVersions = Set("0.14.0", "0.14.1")
+
 
 def priorTo2_13(scalaVersion: String): Boolean =
   CrossVersion.partialVersion(scalaVersion) match {
@@ -78,7 +79,8 @@ val allSettings = baseSettings ++ publishSettings
 val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
 
 lazy val root =
-  project.in(file(".")).settings(allSettings).settings(noPublishSettings).aggregate(genericExtrasJVM, genericExtrasJS)
+  project.in(file(".")).settings(allSettings).settings(noPublishSettings).aggregate(genericExtrasJVM, genericExtrasJS).disablePlugins(MimaPlugin)
+
 
 lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
   .withoutSuffixFor(JVMPlatform)
@@ -87,7 +89,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
   .settings(allSettings)
   .settings(
     moduleName := "circe-generic-extras",
-    mimaPreviousArtifacts := Set("io.circe" %% "circe-generic-extras" % previousCirceGenericExtrasVersion),
+    mimaPreviousArtifacts := previousCirceGenericExtrasVersions.map("io.circe" %% "circe-generic-extras" % _),
     libraryDependencies ++= Seq(
       "io.circe" %%% "circe-generic" % circeVersion,
       "io.circe" %%% "circe-literal" % circeVersion % Test,
