@@ -10,5 +10,7 @@ target/
 tmp/
 docs/src/main/tut/contributing.md
 .bsp/
+.bloop/
 .metals/
 .vscode/
+**/metals.sbt
