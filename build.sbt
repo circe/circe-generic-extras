@@ -82,7 +82,7 @@ lazy val root =
     .in(file("."))
     .settings(allSettings)
     .settings(noPublishSettings)
-    .aggregate(genericExtrasJVM, genericExtrasJS)
+    .aggregate(genericExtrasJVM, genericExtrasJS, benchmarks)
     .disablePlugins(MimaPlugin)
 
 lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
@@ -113,6 +113,14 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform)
 
 lazy val genericExtrasJVM = genericExtras.jvm
 lazy val genericExtrasJS = genericExtras.js
+
+lazy val benchmarks = project.in(file("benchmarks")).settings(noPublishSettings ++ baseSettings).settings(
+  moduleName := "circe-generic-extras-benchmarks",
+  libraryDependencies ++= List(
+    "io.circe" %%% "circe-parser" % circeVersion,
+    scalaOrganization.value % "scala-reflect" % scalaVersion.value
+  )
+).dependsOn(genericExtras.jvm).enablePlugins(JmhPlugin)
 
 lazy val publishSettings = Seq(
   releaseCrossBuild := true,
@@ -153,7 +161,8 @@ lazy val publishSettings = Seq(
 lazy val noPublishSettings = Seq(
   publish := {},
   publishLocal := {},
-  publishArtifact := false
+  publishArtifact := false,
+  publish / skip := true
 )
 
 credentials ++= (

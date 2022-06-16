@@ -127,7 +127,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
     test("Option[T] with default should be None if null decoded") {
       val json = json"""{ "a": null }"""
-      assert(Decoder[FooWithDefault].decodeJson(json) === Right(FooWithDefault(None, "b")))
+      assertEquals(Decoder[FooWithDefault].decodeJson(json), Right(FooWithDefault(None, "b")))
     }
 
     test("Option[T] with default should be default value if missing key decoded") {
