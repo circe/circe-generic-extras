@@ -22,14 +22,14 @@ ThisBuild / githubWorkflowJavaVersions := Seq("8", "11", "17").map(JavaSpec.temu
 ThisBuild / githubWorkflowAddedJobs ++= Seq(
   WorkflowJob(
     id = "scalafmt",
-    name = "Scalafmt and Scalastyle",
+    name = "Scalafmt",
     scalas = List(crossScalaVersions.value.last),
     steps = List(WorkflowStep.Checkout) ++ WorkflowStep.SetupJava(
       List(githubWorkflowJavaVersions.value.last)
     ) ++ githubWorkflowGeneratedCacheSteps.value ++ List(
       WorkflowStep.Sbt(
-        List("+scalafmtCheckAll", "scalafmtSbtCheck", "scalastyle"),
-        name = Some("Scalafmt and Scalastyle tests")
+        List("+scalafmtCheckAll", "scalafmtSbtCheck"),
+        name = Some("Scalafmt tests")
       )
     )
   ),
