@@ -8,4 +8,3 @@ addSbtPlugin("org.scala-native" % "sbt-scala-native" % "0.4.7")
 addSbtPlugin("org.scalameta" % "sbt-scalafmt" % "2.4.6")
 addSbtPlugin("org.scoverage" % "sbt-scoverage" % "1.9.3")
 addSbtPlugin("pl.project13.scala" % "sbt-jmh" % "0.4.3")
-
