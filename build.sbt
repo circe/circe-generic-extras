@@ -25,7 +25,7 @@ ThisBuild / githubWorkflowAddedJobs ++= Seq(
   WorkflowJob(
     id = "coverage",
     name = "Generate coverage report",
-    scalas = crossScalaVersions.value.filterNot(_.startsWith("3.")).toList,
+    scalas = List(Scala213V),
     steps = List(WorkflowStep.Checkout) ++ WorkflowStep.SetupJava(
       List(githubWorkflowJavaVersions.value.last)
     ) ++ githubWorkflowGeneratedCacheSteps.value ++ List(
