@@ -1,4 +1,4 @@
-addSbtPlugin("com.47deg" % "sbt-microsites" % "1.3.4")
+addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
 addSbtPlugin("org.typelevel" % "sbt-typelevel-ci-release" % "0.4.14")
 addSbtPlugin("org.typelevel" % "sbt-typelevel-settings" % "0.4.14")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.2.0")

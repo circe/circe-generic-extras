@@ -17,22 +17,11 @@ ThisBuild / organization := "io.circe"
 ThisBuild / crossScalaVersions := List(Scala212V, Scala213V)
 ThisBuild / scalaVersion := Scala213V
 
-ThisBuild / githubWorkflowJavaVersions := Seq("8", "11", "17").map(JavaSpec.temurin)
+ThisBuild / githubWorkflowJavaVersions := Seq("8", "17").map(JavaSpec.temurin)
+
+ThisBuild / tlCiScalafmtCheck := true
 
 ThisBuild / githubWorkflowAddedJobs ++= Seq(
-  WorkflowJob(
-    id = "scalafmt",
-    name = "Scalafmt",
-    scalas = List(crossScalaVersions.value.last),
-    steps = List(WorkflowStep.Checkout) ++ WorkflowStep.SetupJava(
-      List(githubWorkflowJavaVersions.value.last)
-    ) ++ githubWorkflowGeneratedCacheSteps.value ++ List(
-      WorkflowStep.Sbt(
-        List("+scalafmtCheckAll", "scalafmtSbtCheck"),
-        name = Some("Scalafmt tests")
-      )
-    )
-  ),
   WorkflowJob(
     id = "coverage",
     name = "Generate coverage report",
@@ -55,14 +44,10 @@ ThisBuild / githubWorkflowAddedJobs ++= Seq(
   )
 )
 
-ThisBuild / scalafixScalaBinaryVersion := CrossVersion.binaryScalaVersion(scalaVersion.value)
-ThisBuild / scalafixAll / skip := tlIsScala3.value
-ThisBuild / ScalafixConfig / skip := tlIsScala3.value
-
 val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
 
 lazy val root =
-  tlCrossRootProject.aggregate(genericExtras).enablePlugins(NoPublishPlugin).disablePlugins(ScalafixPlugin)
+  tlCrossRootProject.aggregate(genericExtras).disablePlugins(ScalafixPlugin)
 
 lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
@@ -98,7 +83,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .jvmSettings(
     Test / fork := true,
     coverageEnabled := (
-      if (scalaBinaryVersion == "2.12") false else coverageEnabled.value
+      if (scalaBinaryVersion.value == "2.12") false else coverageEnabled.value
     )
   )
   .jsSettings()
@@ -106,7 +91,6 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
     tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.3").toMap
   )
 
-ThisBuild / homepage := Some(url("https://github.com/circe/circe-generic-extras"))
 ThisBuild / licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 ThisBuild / developers := List(
   Developer("travisbrown", "Travis Brown", "travisrobertbrown@gmail.com", url("https://twitter.com/travisbrown")),
