@@ -47,7 +47,7 @@ ThisBuild / githubWorkflowAddedJobs ++= Seq(
 val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
 
 lazy val root =
-  tlCrossRootProject.aggregate(genericExtras).disablePlugins(ScalafixPlugin)
+  tlCrossRootProject.aggregate(genericExtras)
 
 lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
