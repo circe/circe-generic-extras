@@ -46,7 +46,7 @@ class EnumerationSemiautoDerivedSuite extends CirceSuite {
     implicit val config: Configuration = Configuration.default.withSnakeCaseConstructorNames
     val decodeMary = deriveEnumerationDecoder[Mary]
     val expected = json""""little_lamb""""
-    assert(decodeMary.decodeJson(expected) === Right(LittleLamb))
+    assertEquals(decodeMary.decodeJson(expected),  Right(LittleLamb))
   }
 
   test("deriveEnumerationEncoder should not compile on an ADT with case classes") {
@@ -69,6 +69,6 @@ class EnumerationSemiautoDerivedSuite extends CirceSuite {
     implicit val config: Configuration = Configuration.default.withSnakeCaseConstructorNames
     val encodeMary = deriveEnumerationEncoder[Mary]
     val expected = json""""little_lamb""""
-    assert(encodeMary(LittleLamb) === expected)
+    assertEquals(encodeMary(LittleLamb),  expected)
   }
 }

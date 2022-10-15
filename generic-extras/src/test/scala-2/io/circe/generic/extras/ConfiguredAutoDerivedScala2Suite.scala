@@ -26,7 +26,7 @@ class ConfiguredAutoDerivedScala2Suite extends CirceSuite {
           .as[Int => Qux[String]]
           .map(_(i))
 
-        assert(result === Right(Qux(i, s, j)))
+        assertEquals(result,  Right(Qux(i, s, j)))
       }
     }
 }

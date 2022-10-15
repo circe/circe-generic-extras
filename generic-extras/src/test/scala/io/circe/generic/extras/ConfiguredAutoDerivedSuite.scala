@@ -60,8 +60,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       import foo._
       val json = json"""{ "this_is_a_field": $thisIsAField, "a": $a, "b": $b}"""
 
-      assert(Encoder[ConfigExampleFoo].apply(foo) === json)
-      assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleFoo].apply(foo),  json)
+      assertEquals(Decoder[ConfigExampleFoo].decodeJson(json),  Right(foo))
     }
   }
 
@@ -72,8 +72,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       import foo._
       val json = json"""{ "THIS_IS_A_FIELD": $thisIsAField, "A": $a, "B": $b}"""
 
-      assert(Encoder[ConfigExampleFoo].apply(foo) === json)
-      assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleFoo].apply(foo),  json)
+      assertEquals(Decoder[ConfigExampleFoo].decodeJson(json),  Right(foo))
     }
   }
 
@@ -84,8 +84,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       import foo._
       val json = json"""{ "this-is-a-field": $thisIsAField, "a": $a, "b": $b}"""
 
-      assert(Encoder[ConfigExampleFoo].apply(foo) === json)
-      assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleFoo].apply(foo),  json)
+      assertEquals(Decoder[ConfigExampleFoo].decodeJson(json),  Right(foo))
     }
   }
 
@@ -109,8 +109,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       val json = json"""{ "thisIsAField": $f, "b": $b }"""
       val expected = json"""{ "thisIsAField": $f, "a": 0, "b": $b}"""
 
-      assert(Encoder[ConfigExampleFoo].apply(foo) === expected)
-      assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleFoo].apply(foo),  expected)
+      assertEquals(Decoder[ConfigExampleFoo].decodeJson(json),  Right(foo))
     }
   }
 
@@ -129,12 +129,12 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
     test("Option[T] without default should be None if null decoded") {
       val json = json"""{ "a": null }"""
-      assert(Decoder[FooNoDefault].decodeJson(json) === Right(FooNoDefault(None, "b")))
+      assertEquals(Decoder[FooNoDefault].decodeJson(json),  Right(FooNoDefault(None, "b")))
     }
 
     test("Option[T] without default should be None if missing key decoded") {
       val json = json"""{}"""
-      assert(Decoder[FooNoDefault].decodeJson(json) === Right(FooNoDefault(None, "b")))
+      assertEquals(Decoder[FooNoDefault].decodeJson(json),  Right(FooNoDefault(None, "b")))
     }
 
     test("Option[T] with default should be None if null decoded") {
@@ -144,19 +144,19 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
     test("Option[T] with default should be default value if missing key decoded") {
       val json = json"""{}"""
-      assert(Decoder[FooWithDefault].decodeJson(json) === Right(FooWithDefault(Some(0), "b")))
-      assert(Decoder[FooWithDefault].decodeAccumulating(json.hcursor) === Validated.valid(FooWithDefault(Some(0), "b")))
+      assertEquals(Decoder[FooWithDefault].decodeJson(json),  Right(FooWithDefault(Some(0), "b")))
+      assertEquals(Decoder[FooWithDefault].decodeAccumulating(json.hcursor),  Validated.valid(FooWithDefault(Some(0), "b")))
     }
 
     test("Value with default should be default value if value is null") {
       val json = json"""{"b": null}"""
-      assert(Decoder[FooWithDefault].decodeJson(json) === Right(FooWithDefault(Some(0), "b")))
-      assert(Decoder[FooWithDefault].decodeAccumulating(json.hcursor) === Validated.valid(FooWithDefault(Some(0), "b")))
+      assertEquals(Decoder[FooWithDefault].decodeJson(json),  Right(FooWithDefault(Some(0), "b")))
+      assertEquals(Decoder[FooWithDefault].decodeAccumulating(json.hcursor),  Validated.valid(FooWithDefault(Some(0), "b")))
     }
 
     test("Option[T] with default should fail to decode if type in json is not correct") {
       val json = json"""{"a": "NotAnInt"}"""
-      assert(Decoder[FooWithDefault].decodeJson(json) === Left(DecodingFailure("Int", List(DownField("a")))))
+      assertEquals(Decoder[FooWithDefault].decodeJson(json),  Left(DecodingFailure("Int", List(DownField("a")))))
       assert(
         Decoder[FooWithDefault].decodeAccumulating(json.hcursor)
           === Validated.invalidNel(DecodingFailure("Int", List(DownField("a"))))
@@ -187,8 +187,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       import foo._
       val json = json"""{ "type": "ConfigExampleFoo", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === json)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleBase].apply(foo),  json)
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Right(foo))
     }
   }
 
@@ -200,8 +200,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       import foo._
       val json = json"""{ "type": "config_example_foo", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === json)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleBase].apply(foo),  json)
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Right(foo))
     }
   }
 
@@ -215,8 +215,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       import foo._
       val json = json"""{ "type": "CONFIG_EXAMPLE_FOO", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === json)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleBase].apply(foo),  json)
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Right(foo))
     }
   }
 
@@ -228,8 +228,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       import foo._
       val json = json"""{ "type": "config-example-foo", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === json)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleBase].apply(foo),  json)
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Right(foo))
     }
   }
 
@@ -268,8 +268,8 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       val json = json"""{ "type": "ConfigExampleFoo", "this_is_a_field": $f, "b": $b}"""
       val expected = json"""{ "type": "ConfigExampleFoo", "this_is_a_field": $f, "a": 0, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleBase].apply(foo),  expected)
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Right(foo))
     }
   }
 

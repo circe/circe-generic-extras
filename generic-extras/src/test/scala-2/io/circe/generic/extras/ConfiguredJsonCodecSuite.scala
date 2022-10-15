@@ -76,8 +76,8 @@ class ConfiguredJsonCodecSuite extends CirceSuite {
       val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
       val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleBase].apply(foo),  expected)
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Right(foo))
     }
   }
 

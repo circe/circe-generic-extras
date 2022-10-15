@@ -42,7 +42,7 @@ class ConfiguredSemiautoDerivedScala2Suite extends CirceSuite {
           _(field(j))
         )
 
-      assert(result === Right(Qux(i, s, j)))
+      assertEquals(result,  Right(Qux(i, s, j)))
     }
   }
 
@@ -56,7 +56,7 @@ class ConfiguredSemiautoDerivedScala2Suite extends CirceSuite {
         .as[Int => Qux[String]]
         .map(_(i))
 
-      assert(result === Right(Qux(i, s, j)))
+      assertEquals(result,  Right(Qux(i, s, j)))
     }
   }
 
@@ -70,7 +70,7 @@ class ConfiguredSemiautoDerivedScala2Suite extends CirceSuite {
 
       val expected = Qux[String](i.getOrElse(q.i), a.getOrElse(q.a), j.getOrElse(q.j))
 
-      assert(json.as[Qux[String] => Qux[String]].map(_(q)) === Right(expected))
+      assertEquals(json.as[Qux[String] => Qux[String]].map(_(q)),  Right(expected))
     }
   }
 }

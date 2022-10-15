@@ -38,9 +38,9 @@ object ConfiguredSemiautoDerivedSuite {
   implicit val customConfig: Configuration =
     Configuration.default.withSnakeCaseMemberNames.withDefaults.withDiscriminator("type").withSnakeCaseConstructorNames
 
-  implicit val decodeConfigExampleBase: Decoder[ConfigExampleBase] = deriveConfiguredDecoder
-  implicit val encodeConfigExampleBase: Encoder.AsObject[ConfigExampleBase] = deriveConfiguredEncoder
-  val codecForConfigExampleBase: Codec.AsObject[ConfigExampleBase] = deriveConfiguredCodec
+  implicit lazy val decodeConfigExampleBase: Decoder[ConfigExampleBase] = deriveConfiguredDecoder
+  implicit lazy val encodeConfigExampleBase: Encoder.AsObject[ConfigExampleBase] = deriveConfiguredEncoder
+  lazy val codecForConfigExampleBase: Codec.AsObject[ConfigExampleBase] = deriveConfiguredCodec
 }
 
 class ConfiguredSemiautoDerivedSuite extends CirceSuite {
@@ -66,8 +66,8 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
       val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
       val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleBase].apply(foo),  expected)
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Right(foo))
     }
   }
 
@@ -97,9 +97,9 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
       val foo: ConfigExampleBase = ConfigExampleFoo("field_value", 0, 100)
       val encoded = encoder.apply(foo)
       val decoded = decoder.decodeJson(encoded)
-      assert(decoded === Right(foo))
-      assert(transformMemberNamesCallCount === fieldCount * 2)
-      assert(transformConstructorCallCount === decodeConstructorCount + encodeConstructorCount)
+      assertEquals(decoded,  Right(foo))
+      assertEquals(transformMemberNamesCallCount, fieldCount * 2)
+      assertEquals(transformConstructorCallCount,  decodeConstructorCount + encodeConstructorCount)
     }
   }
 
@@ -121,7 +121,7 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
       val expectedError =
         DecodingFailure("Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, type_field", Nil)
 
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Left(expectedError))
+      assertEquals(Decoder[ConfigExampleBase].decodeJson(json),  Left(expectedError))
     }
   }
 
