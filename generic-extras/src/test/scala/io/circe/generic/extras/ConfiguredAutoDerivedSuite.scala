@@ -279,19 +279,5 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
     checkAll("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].codec)
     checkAll("Codec[Qux[Int]]", CodecTests[Qux[Int]].codec)
     checkAll("Codec[Foo]", CodecTests[Foo].codec)
-
-    property("Decoder[Int => Qux[String]] should decode partial JSON representations") {
-      forAll { (i: Int, s: String, j: Int) =>
-        val result = Json
-          .obj(
-            "a" -> Json.fromString(s),
-            "j" -> Json.fromInt(j)
-          )
-          .as[Int => Qux[String]]
-          .map(_(i))
-
-        assert(result === Right(Qux(i, s, j)))
-      }
-    }
   }
 }
