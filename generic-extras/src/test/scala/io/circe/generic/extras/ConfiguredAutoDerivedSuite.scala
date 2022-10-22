@@ -94,10 +94,10 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       implicit val pascalCaseConfig: Configuration = Configuration.default.withPascalCaseMemberNames
 
       import foo._
-      val json = json"""{ "ThisIsAField": $thisIsAField, "a": $a, "b": $b}"""
+      val json = json"""{ "ThisIsAField": $thisIsAField, "A": $a, "B": $b}"""
 
-      assert(Encoder[ConfigExampleFoo].apply(foo) === json)
-      assert(Decoder[ConfigExampleFoo].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[ConfigExampleFoo].apply(foo), json)
+      assertEquals(Decoder[ConfigExampleFoo].decodeJson(json), Right(foo))
     }
   }
 
@@ -234,15 +234,28 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#transformConstructorNames should support constructor name transformation with PascalCase") {
-    forAll { foo: ConfigExampleFoo =>
+    sealed trait PascalExampleBase
+    case class pascalExampleFoo(thisIsAField: String, a: Int = 0, b: Double) extends PascalExampleBase
+    case object pascalExampleBar extends PascalExampleBase
+    object PascalExampleBase {
+      implicit val eqExampleBase: Eq[PascalExampleBase] = Eq.fromUniversalEquals
+      val genExampleFoo: Gen[pascalExampleFoo] = for {
+        thisIsAField <- arbitrary[String]
+        a <- arbitrary[Int]
+        b <- arbitrary[Double]
+      } yield pascalExampleFoo(thisIsAField, a, b)
+      implicit val arbitraryExampleFoo: Arbitrary[pascalExampleFoo] = Arbitrary(genExampleFoo)
+    }
+
+    forAll { foo: pascalExampleFoo =>
       implicit val pascalCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withPascalCaseConstructorNames
 
       import foo._
-      val json = json"""{ "type": "ConfigExampleFoo", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
+      val json = json"""{ "type": "PascalExampleFoo", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
 
-      assert(Encoder[ConfigExampleBase].apply(foo) === json)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+      assertEquals(Encoder[PascalExampleBase].apply(foo), json)
+      assertEquals(Decoder[PascalExampleBase].decodeJson(json), Right(foo))
     }
   }
 
