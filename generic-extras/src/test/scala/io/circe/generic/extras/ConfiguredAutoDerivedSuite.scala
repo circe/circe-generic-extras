@@ -89,7 +89,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
     }
   }
 
-  property("Configuration#transformMemberNames should support member name transformation using PascalCase")  {
+  property("Configuration#transformMemberNames should support member name transformation using PascalCase") {
     forAll { foo: ConfigExampleFoo =>
       implicit val pascalCaseConfig: Configuration = Configuration.default.withPascalCaseMemberNames
 
