@@ -104,7 +104,7 @@ object ConfiguredDecoder extends IncompleteConfiguredDecoders {
     keyAnnotationMap: Map[String, String]
   ) extends CaseClassConfiguredDecoder[A, R](config, keyAnnotationMap) {
     private[this] val expectedFields =
-      keyNames.map(memberNameTransformer) ++ config.discriminator.map(constructorNameTransformer)
+      keyNames.map(memberNameTransformer) ++ config.discriminator
 
     private[this] val expectedFieldsStr = expectedFields.mkString(", ")
     private[this] val expectedFieldsSet = expectedFields.toSet
