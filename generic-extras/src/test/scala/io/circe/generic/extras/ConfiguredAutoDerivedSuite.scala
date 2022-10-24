@@ -89,6 +89,18 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
     }
   }
 
+  property("Configuration#transformMemberNames should support member name transformation using PascalCase") {
+    forAll { foo: ConfigExampleFoo =>
+      implicit val pascalCaseConfig: Configuration = Configuration.default.withPascalCaseMemberNames
+
+      import foo._
+      val json = json"""{ "ThisIsAField": $thisIsAField, "A": $a, "B": $b}"""
+
+      assertEquals(Encoder[ConfigExampleFoo].apply(foo), json)
+      assertEquals(Decoder[ConfigExampleFoo].decodeJson(json), Right(foo))
+    }
+  }
+
   property("Configuration#useDefaults should support using default values during decoding") {
     forAll { (f: String, b: Double) =>
       implicit val withDefaultsConfig: Configuration = Configuration.default.withDefaults
@@ -218,6 +230,32 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assert(Encoder[ConfigExampleBase].apply(foo) === json)
       assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
+    }
+  }
+
+  property("Configuration#transformConstructorNames should support constructor name transformation with PascalCase") {
+    sealed trait PascalExampleBase
+    case class pascalExampleFoo(thisIsAField: String, a: Int = 0, b: Double) extends PascalExampleBase
+    case object pascalExampleBar extends PascalExampleBase
+    object PascalExampleBase {
+      implicit val eqExampleBase: Eq[PascalExampleBase] = Eq.fromUniversalEquals
+      val genExampleFoo: Gen[pascalExampleFoo] = for {
+        thisIsAField <- arbitrary[String]
+        a <- arbitrary[Int]
+        b <- arbitrary[Double]
+      } yield pascalExampleFoo(thisIsAField, a, b)
+      implicit val arbitraryExampleFoo: Arbitrary[pascalExampleFoo] = Arbitrary(genExampleFoo)
+    }
+
+    forAll { foo: pascalExampleFoo =>
+      implicit val pascalCaseConfig: Configuration =
+        Configuration.default.withDiscriminator("type").withPascalCaseConstructorNames
+
+      import foo._
+      val json = json"""{ "type": "PascalExampleFoo", "thisIsAField": $thisIsAField, "a": $a, "b": $b}"""
+
+      assertEquals(Encoder[PascalExampleBase].apply(foo), json)
+      assertEquals(Decoder[PascalExampleBase].decodeJson(json), Right(foo))
     }
   }
 
