@@ -9,11 +9,17 @@ name: Continuous Integration
 
 on:
   pull_request:
-    branches: ['**']
+    branches: ['**', '!update/**', '!pr/**']
   push:
-    branches: ['**']
+    branches: ['**', '!update/**', '!pr/**']
+    tags: [v*]
 
 env:
+  PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
+  SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+  SONATYPE_CREDENTIAL_HOST: ${{ secrets.SONATYPE_CREDENTIAL_HOST }}
+  SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+  PGP_SECRET: ${{ secrets.PGP_SECRET }}
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
@@ -23,7 +29,13 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         scala: [2.12.15, 2.13.7]
-        java: [adopt@1.8]
+        java: [temurin@8, temurin@17]
+        project: [rootJS, rootJVM, rootNative]
+        exclude:
+          - project: rootJS
+            java: temurin@17
+          - project: rootNative
+            java: temurin@17
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout current branch (full)
@@ -31,10 +43,37 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Java and Scala
-        uses: olafurpg/setup-scala@v13
+      - name: Download Java (temurin@8)
+        id: download-java-temurin-8
+        if: matrix.java == 'temurin@8'
+        uses: typelevel/download-java@v1
         with:
-          java-version: ${{ matrix.java }}
+          distribution: temurin
+          java-version: 8
+
+      - name: Setup Java (temurin@8)
+        if: matrix.java == 'temurin@8'
+        uses: actions/setup-java@v2
+        with:
+          distribution: jdkfile
+          java-version: 8
+          jdkFile: ${{ steps.download-java-temurin-8.outputs.jdkFile }}
+
+      - name: Download Java (temurin@17)
+        id: download-java-temurin-17
+        if: matrix.java == 'temurin@17'
+        uses: typelevel/download-java@v1
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Java (temurin@17)
+        if: matrix.java == 'temurin@17'
+        uses: actions/setup-java@v2
+        with:
+          distribution: jdkfile
+          java-version: 17
+          jdkFile: ${{ steps.download-java-temurin-17.outputs.jdkFile }}
 
       - name: Cache sbt
         uses: actions/cache@v2
@@ -49,13 +88,73 @@ jobs:
           key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
 
       - name: Check that workflows are up to date
-        run: sbt ++${{ matrix.scala }} githubWorkflowCheck
+        run: sbt githubWorkflowCheck
 
-      - name: Test JVM
-        run: sbt ++${{ matrix.scala }} clean coverage genericExtras/test coverageReport scalafmtCheckAll
+      - name: Check formatting
+        if: matrix.java == 'temurin@8'
+        run: sbt 'project ${{ matrix.project }}' '++${{ matrix.scala }}' scalafmtCheckAll 'project /' scalafmtSbtCheck
 
-      - name: Upload code coverage
-        uses: codecov/codecov-action@e156083f13aff6830c92fc5faa23505779fbf649
+      - name: scalaJSLink
+        if: matrix.project == 'rootJS'
+        run: sbt 'project ${{ matrix.project }}' '++${{ matrix.scala }}' Test/scalaJSLinkerResult
 
-      - name: Test JS
-        run: sbt ++${{ matrix.scala }} genericExtrasJS/test
+      - name: nativeLink
+        if: matrix.project == 'rootNative'
+        run: sbt 'project ${{ matrix.project }}' '++${{ matrix.scala }}' Test/nativeLink
+
+      - name: Test
+        run: sbt 'project ${{ matrix.project }}' '++${{ matrix.scala }}' test
+
+      - name: Check binary compatibility
+        if: matrix.java == 'temurin@8'
+        run: sbt 'project ${{ matrix.project }}' '++${{ matrix.scala }}' mimaReportBinaryIssues
+
+      - name: Generate API documentation
+        if: matrix.java == 'temurin@8'
+        run: sbt 'project ${{ matrix.project }}' '++${{ matrix.scala }}' doc
+
+  coverage:
+    name: Generate coverage report
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        scala: [2.13.7]
+        java: [temurin@11]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout current branch (fast)
+        uses: actions/checkout@v2
+
+      - name: Download Java (temurin@17)
+        id: download-java-temurin-17
+        if: matrix.java == 'temurin@17'
+        uses: typelevel/download-java@v1
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Java (temurin@17)
+        if: matrix.java == 'temurin@17'
+        uses: actions/setup-java@v2
+        with:
+          distribution: jdkfile
+          java-version: 17
+          jdkFile: ${{ steps.download-java-temurin-17.outputs.jdkFile }}
+
+      - name: Cache sbt
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.sbt
+            ~/.ivy2/cache
+            ~/.coursier/cache/v1
+            ~/.cache/coursier/v1
+            ~/AppData/Local/Coursier/Cache/v1
+            ~/Library/Caches/Coursier/v1
+          key: ${{ runner.os }}-sbt-cache-v2-${{ hashFiles('**/*.sbt') }}-${{ hashFiles('project/build.properties') }}
+
+      - run: sbt '++${{ matrix.scala }}' coverage rootJVM/test coverageAggregate
+
+      - uses: codecov/codecov-action@v2
+        with:
+          flags: ${{matrix.scala}},${{matrix.java}}
