@@ -5,6 +5,7 @@ import io.circe.{ Codec, Decoder, DecodingFailure, Encoder, Json }
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
 import io.circe.testing.CodecTests
+import io.circe.syntax._
 import org.scalacheck.{ Arbitrary, Gen }
 import org.scalacheck.Arbitrary.arbitrary
 import shapeless.Witness
@@ -202,6 +203,28 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
           (expectedError, expectedExtraneous)
         )
       )
+    }
+  }
+
+  property("it should not transform discriminator for strict decoding checks") {
+    forAll { (f: String, b: Double) =>
+      implicit val customConfig: Configuration =
+        Configuration.default.withSnakeCaseMemberNames.withDefaults
+          .withDiscriminator("typeField")
+          .withSnakeCaseConstructorNames
+          .withStrictDecoding
+
+      implicit val decodeConfigExampleBase: Decoder[ConfigExampleBase] = deriveConfiguredDecoder
+
+      val json = json"""{"typeField": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
+      val jsonExtra = json.mapObject(_.add("stowaway_field", "I should not be here".asJson))
+
+      val expectedError =
+        DecodingFailure("Unexpected field: [stowaway_field]; valid fields: this_is_a_field, a, b, typeField", Nil)
+
+      // We should not transform `typeField` into snake case when checking strictly used fields.
+      assert(clue(Decoder[ConfigExampleBase].decodeJson(json)).isRight)
+      assert(Decoder[ConfigExampleBase].decodeJson(jsonExtra) === Left(expectedError))
     }
   }
 

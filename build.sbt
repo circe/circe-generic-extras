@@ -1,6 +1,6 @@
 import sbtcrossproject.{ CrossType, crossProject }
 
-val Scala212V = "2.12.15"
+val Scala212V = "2.12.17"
 val Scala213V = "2.13.7"
 
 val circeVersion = "0.14.3"
@@ -47,7 +47,7 @@ ThisBuild / githubWorkflowAddedJobs ++= Seq(
 val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
 
 lazy val root =
-  tlCrossRootProject.aggregate(genericExtras)
+  tlCrossRootProject.aggregate(genericExtras, benchmarks)
 
 lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .crossType(CrossType.Pure)
@@ -90,6 +90,18 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .nativeSettings(
     tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.3").toMap
   )
+
+lazy val benchmarks = project
+  .in(file("benchmarks"))
+  .settings(
+    moduleName := "circe-generic-extras-benchmarks",
+    libraryDependencies ++= List(
+      "io.circe" %%% "circe-parser" % circeVersion,
+      scalaOrganization.value % "scala-reflect" % scalaVersion.value
+    )
+  )
+  .dependsOn(genericExtras.jvm)
+  .enablePlugins(JmhPlugin, NoPublishPlugin)
 
 ThisBuild / licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
 ThisBuild / developers := List(
