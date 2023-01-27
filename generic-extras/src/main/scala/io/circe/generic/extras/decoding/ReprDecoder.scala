@@ -43,14 +43,21 @@ abstract class ReprDecoder[A] extends Decoder[A] {
     name: String,
     defaults: Map[String, Any]
   ): Decoder.Result[B] =
-    decoder.tryDecode(c) match {
-      case r @ Right(_) if r ne Decoder.keyMissingNone            => r
-      case l @ Left(_) if c.succeeded && !c.focus.contains(JNull) => l
-      case r =>
-        defaults.get(name) match {
-          case Some(d: B @unchecked) => Right(d)
-          case _                     => r
+    // We have to do extra gymnastics here because `Decoder[Option[A]]` is
+    // designed to be decode `null` as `Right(None)`, even when a default is
+    // present, but all other types differ. We might consider changing that
+    // semantic.
+    (c.focus.isEmpty, defaults.get(name)) match {
+      case (true, Some(d: B @unchecked)) => Right(d)
+      case (_, Some(d: B @unchecked)) =>
+        decoder.tryDecode(c) match {
+          case l @ Left(_) if c.focus.contains(JNull) =>
+            Right(d)
+          case otherwise =>
+            otherwise
         }
+      case _ =>
+        decoder.tryDecode(c)
     }
 
   final protected[this] def orDefaultAccumulating[B](
@@ -59,14 +66,17 @@ abstract class ReprDecoder[A] extends Decoder[A] {
     name: String,
     defaults: Map[String, Any]
   ): Decoder.AccumulatingResult[B] =
-    decoder.tryDecodeAccumulating(c) match {
-      case r @ Validated.Valid(_) if r ne Decoder.keyMissingNoneAccumulating   => r
-      case l @ Validated.Invalid(_) if c.succeeded && !c.focus.contains(JNull) => l
-      case r =>
-        defaults.get(name) match {
-          case Some(d: B @unchecked) => Validated.valid(d)
-          case _                     => r
+    (c.focus.isEmpty, defaults.get(name)) match {
+      case (true, Some(d: B @unchecked)) => Validated.valid(d)
+      case (_, Some(d: B @unchecked)) =>
+        decoder.tryDecodeAccumulating(c) match {
+          case l @ Validated.Invalid(_) if c.focus.contains(JNull) =>
+            Validated.valid(d)
+          case otherwise =>
+            otherwise
         }
+      case _ =>
+        decoder.tryDecodeAccumulating(c)
     }
 
   final protected[this] def withDiscriminator[V](
