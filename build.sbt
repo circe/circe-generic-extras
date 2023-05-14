@@ -2,9 +2,9 @@ import sbtcrossproject.{ CrossType, crossProject }
 
 val Scala212V = "2.12.17"
 val Scala213V = "2.13.7"
-val Scala3V = "3.2.0"
+val Scala3V = "3.2.2"
 
-val circeVersion = "0.14.3"
+val circeVersion = "0.14.5"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.4.0"
@@ -100,9 +100,9 @@ lazy val benchmarks = project
   .settings(
     moduleName := "circe-generic-extras-benchmarks",
     libraryDependencies ++= List(
-      "io.circe" %%% "circe-parser" % circeVersion,
-      scalaOrganization.value % "scala-reflect" % scalaVersion.value
-    )
+      "io.circe" %%% "circe-parser" % circeVersion
+    ) ++ (if(scalaBinaryVersion.value.startsWith("2")) List(scalaOrganization.value % "scala-reflect" % scalaVersion.value)
+    else List.empty)
   )
   .dependsOn(genericExtras.jvm)
   .enablePlugins(JmhPlugin, NoPublishPlugin)

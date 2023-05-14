@@ -23,15 +23,15 @@ import scala.deriving.Mirror
  * }}}
  */
 object semiauto {
-  inline final def deriveConfiguredDecoder[A](using inline A: Mirror.Of[A], configuration: Configuration): Decoder[A] = ???
-  inline final def deriveConfiguredEncoder[A](using inline A: Mirror.Of[A], configuration: Configuration): Encoder.AsObject[A] = ???
-  inline final def deriveConfiguredCodec[A](using inline A: Mirror.Of[A], configuration: Configuration): Codec.AsObject[A] = ???
+  inline final def deriveConfiguredDecoder[A](using inline A: Mirror.Of[A], configuration: Configuration): Decoder[A] = io.circe.derivation.ConfiguredDecoder.derived[A]
+  inline final def deriveConfiguredEncoder[A](using inline A: Mirror.Of[A], configuration: Configuration): Encoder.AsObject[A] = io.circe.derivation.ConfiguredEncoder.derived[A]
+  inline final def deriveConfiguredCodec[A](using inline A: Mirror.Of[A], configuration: Configuration): Codec.AsObject[A] = io.circe.derivation.ConfiguredCodec.derived[A]
 
   inline final def deriveExtrasDecoder[A](using inline A: Mirror.Of[A], configuration: Configuration): ExtrasDecoder[A] = ???
-  inline final def deriveExtrasEncoder[A](using inline A: Mirror.Of[A], configuration: Configuration): Encoder.AsObject[A] = ???
+  inline final def deriveExtrasEncoder[A](using inline A: Mirror.Of[A], configuration: Configuration): Encoder.AsObject[A] = deriveConfiguredEncoder[A]
   inline final def deriveExtrasCodec[A](using inline A: Mirror.Of[A], configuration: Configuration): ExtrasAsObjectCodec[A] = ???
 
-    /**
+  /**
    * Derive a decoder for a sealed trait hierarchy made up of case objects.
    *
    * Note that this differs from the usual derived decoder in that the leaves of the ADT are represented as JSON
