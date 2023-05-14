@@ -4,7 +4,6 @@ import io.circe.{ Codec, Decoder, Encoder }
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
 import io.circe.testing.CodecTests
-import shapeless.test.illTyped
 
 import examples._
 
@@ -29,25 +28,47 @@ class EnumerationSemiautoDerivedSuite extends CirceSuite {
 
   test("deriveEnumerationDecoder should not compile on an ADT with case classes") {
     implicit val config: Configuration = Configuration.default
-    illTyped("deriveEnumerationDecoder[ExtendedCardinalDirection]")
+    assertNoDiff(
+      compileErrors("deriveEnumerationDecoder[ExtendedCardinalDirection]"),
+      """|error:
+         |Could not find EnumerationDecoder for type io.circe.generic.extras.examples.ExtendedCardinalDirection.
+         |Some possible causes for this:
+         |- io.circe.generic.extras.examples.ExtendedCardinalDirection isn't a case class or sealed trait
+         |- some of io.circe.generic.extras.examples.ExtendedCardinalDirection's members don't have codecs of their own
+         |- missing implicit Configuration
+         |deriveEnumerationDecoder[ExtendedCardinalDirection]
+         |                        ^
+         |""".stripMargin
+    )
   }
 
   test("it should respect Configuration") {
     implicit val config: Configuration = Configuration.default.withSnakeCaseConstructorNames
     val decodeMary = deriveEnumerationDecoder[Mary]
     val expected = json""""little_lamb""""
-    assert(decodeMary.decodeJson(expected) === Right(LittleLamb))
+    assertEquals(decodeMary.decodeJson(expected),  Right(LittleLamb))
   }
 
   test("deriveEnumerationEncoder should not compile on an ADT with case classes") {
     implicit val config: Configuration = Configuration.default
-    illTyped("deriveEnumerationEncoder[ExtendedCardinalDirection]")
+    assertNoDiff(
+      compileErrors("deriveEnumerationEncoder[ExtendedCardinalDirection]"),
+      """|error:
+         |Could not find EnumerationEncoder for type io.circe.generic.extras.examples.ExtendedCardinalDirection.
+         |Some possible causes for this:
+         |- io.circe.generic.extras.examples.ExtendedCardinalDirection isn't a case class or sealed trait
+         |- some of io.circe.generic.extras.examples.ExtendedCardinalDirection's members don't have codecs of their own
+         |- missing implicit Configuration
+         |deriveEnumerationEncoder[ExtendedCardinalDirection]
+         |                        ^
+         |""".stripMargin
+    )
   }
 
   test("it should respect Configuration") {
     implicit val config: Configuration = Configuration.default.withSnakeCaseConstructorNames
     val encodeMary = deriveEnumerationEncoder[Mary]
     val expected = json""""little_lamb""""
-    assert(encodeMary(LittleLamb) === expected)
+    assertEquals(encodeMary(LittleLamb),  expected)
   }
 }

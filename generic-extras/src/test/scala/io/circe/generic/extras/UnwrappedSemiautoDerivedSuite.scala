@@ -35,7 +35,7 @@ class UnwrappedSemiautoDerivedSuite extends CirceSuite {
       val foo = Foo(s)
       val expected = Json.fromString(s)
 
-      assert(Encoder[Foo].apply(foo) === expected)
+      assertEquals(Encoder[Foo].apply(foo),  expected)
     }
   }
 
@@ -44,7 +44,7 @@ class UnwrappedSemiautoDerivedSuite extends CirceSuite {
       val json = Json.fromString(s)
       val expected = Right(Foo(s))
 
-      assert(Decoder[Foo].decodeJson(json) === expected)
+      assertEquals(Decoder[Foo].decodeJson(json),  expected)
     }
   }
 
