@@ -36,6 +36,17 @@ implicit val fooEncoder: Encoder[Foo] = deriveConfiguredEncoder
 implicit val fooDecoder: Decoder[Foo] = deriveConfiguredDecoder
 ```
 
+## Versioning
+
+This library releases at a different cadence than [Circe], any apparent relationship between the [Circe] version numbers and generic-extras version numbers are a coincidence and NOT intentional.  Please use the following table for determining capability with the corresponding [Circe] versions.
+
+| Circe Generic Extras Version | Circe  | Scala 2 | Scala 3 | Scala JVM | Scala.JS | Scala Native |
+|------------------------------|--------|---------|---------|-----------|----------|--------------|
+| 0.14.3 and later             | 0.14.x | ✅      | ❌      | ✅        | ✅       | ✅           |
+| 0.14.2                       | 0.14.x | ✅      | ❌      | ✅        | ✅       | ❌️           |
+| 0.14.1                       | 0.14.x | ✅      | ❌      | ✅        | ✅       | ❌️           |
+| 0.14.0                       | 0.14.x | ✅      | ❌      | ✅        | ✅       | ❌️           |
+
 ## Contributors and participation
 
 All Circe projects support the [Scala code of conduct][code-of-conduct] and we want
