@@ -1,4 +1,4 @@
-addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
+addSbtPlugin("com.github.sbt" % "sbt-ghpages" % "0.8.0")
 addSbtPlugin("org.typelevel" % "sbt-typelevel-ci-release" % "0.4.22")
 addSbtPlugin("org.typelevel" % "sbt-typelevel-settings" % "0.4.22")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.3.2")
