@@ -24,7 +24,8 @@ final case class Configuration(
   transformConstructorNames: String => String,
   useDefaults: Boolean,
   discriminator: Option[String],
-  strictDecoding: Boolean = false
+  strictDecoding: Boolean = false,
+  dropNoneValues: Boolean = false
 ) {
   def withSnakeCaseMemberNames: Configuration = copy(
     transformMemberNames = Configuration.snakeCaseTransformation
@@ -62,6 +63,10 @@ final case class Configuration(
   def withDiscriminator(discriminator: String): Configuration = copy(discriminator = Some(discriminator))
 
   def withStrictDecoding: Configuration = copy(strictDecoding = true)
+
+  def withDropNoneValues: Configuration = copy(dropNoneValues = true)
+  def withoutDropNoneValues: Configuration = copy(dropNoneValues = false)
+
 }
 
 object Configuration {

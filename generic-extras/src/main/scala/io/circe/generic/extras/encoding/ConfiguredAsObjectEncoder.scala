@@ -73,7 +73,8 @@ object ConfiguredAsObjectEncoder {
       encode.value.configuredEncodeObject(gen.to(a))(
         transformMemberName,
         constructorNameTransformer,
-        None
+        None,
+        config.dropNoneValues
       )
   }
 
@@ -86,7 +87,8 @@ object ConfiguredAsObjectEncoder {
       encode.value.configuredEncodeObject(gen.to(a))(
         Predef.identity,
         constructorNameTransformer,
-        config.discriminator
+        config.discriminator,
+        config.dropNoneValues
       )
   }
 }

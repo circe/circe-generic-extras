@@ -2,7 +2,7 @@ package io.circe.generic.extras
 
 import cats.data.Validated
 import cats.kernel.Eq
-import io.circe.{ Decoder, DecodingFailure, Encoder, Json }
+import io.circe.{ Decoder, DecodingFailure, Encoder, Json, JsonObject }
 import io.circe.CursorOp.DownField
 import io.circe.generic.extras.auto._
 import io.circe.literal._
@@ -256,6 +256,142 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
 
       assertEquals(Encoder[PascalExampleBase].apply(foo), json)
       assertEquals(Decoder[PascalExampleBase].decodeJson(json), Right(foo))
+    }
+  }
+
+  property("Configuration#dropNoneValues should drop None values from the JSON AST") {
+    import io.circe.Nullable
+    import io.circe.syntax._
+
+    implicit def arbitraryNullable[A](implicit A: Arbitrary[A]): Arbitrary[Nullable[A]] =
+      Arbitrary[Nullable[A]](
+        A.arbitrary.flatMap { a =>
+          implicitly[Arbitrary[Int]].arbitrary.map {
+            case byte if byte % 3 == 0 =>
+              Nullable.Null: Nullable[A]
+            case byte if byte % 3 == 1 =>
+              Nullable.Undefined: Nullable[A]
+            case _ =>
+              Nullable.Value(a): Nullable[A]
+          }
+        }
+      )
+
+    case class ExampleInner(innerField: String, innerOptionalField: Option[String], innerNullable: Nullable[String])
+
+    object ExampleInner {
+      implicit val eqExampleInner: Eq[ExampleInner] = Eq.fromUniversalEquals
+      val genExampleInner: Gen[ExampleInner] = for {
+        thisIsAField <- arbitrary[String]
+        innerOptionalField <- arbitrary[Option[String]]
+        innerNullable <- arbitrary[Nullable[String]]
+      } yield ExampleInner(thisIsAField, innerOptionalField, innerNullable)
+      implicit val arbitraryExampleFoo: Arbitrary[ExampleInner] = Arbitrary(genExampleInner)
+    }
+
+    case class ExampleFoo(
+      thisIsAField: String,
+      optionalField: Option[String],
+      optionalObjectField: Option[ExampleInner],
+      nullableField: Nullable[String],
+      nullableObjectField: Nullable[ExampleInner]
+    )
+
+    object ExampleFoo {
+      implicit val eqExampleFoo: Eq[ExampleFoo] = Eq.fromUniversalEquals
+      val genExampleFoo: Gen[ExampleFoo] = for {
+        thisIsAField <- arbitrary[String]
+        optionalField <- arbitrary[Option[String]]
+        optionalObjectField <- arbitrary[Option[ExampleInner]]
+        nullableField <- arbitrary[Nullable[String]]
+        nullableObjectField <- arbitrary[Nullable[ExampleInner]]
+      } yield ExampleFoo(thisIsAField, optionalField, optionalObjectField, nullableField, nullableObjectField)
+      implicit val arbitraryExampleFoo: Arbitrary[ExampleFoo] = Arbitrary(genExampleFoo)
+    }
+
+    def optFields(fields: (String, Option[Json])*): Json = {
+      import io.circe.syntax._
+      JsonObject
+        .fromIterable(
+          fields.collect { case (key, Some(value)) =>
+            (key, value)
+          }
+        )
+        .asJson
+    }
+
+    // first, without dropNoneValues to be sure it's off by default
+    forAll { foo: ExampleFoo =>
+      implicit val dropNoneValuesConfig: Configuration =
+        Configuration.default
+
+      def buildInner(inner: ExampleInner): Json =
+        optFields(
+          "innerField" -> inner.innerField.asJson.some,
+          "innerOptionalField" -> inner.innerOptionalField.map(_.asJson).orElse(Json.Null.some),
+          "innerNullable" -> inner.innerNullable.fold(
+            none[Json],
+            Json.Null.some,
+            x => x.asJson.some
+          )
+        )
+
+      val json =
+        optFields(
+          "thisIsAField" -> foo.thisIsAField.asJson.some,
+          "optionalField" -> foo.optionalField.map(_.asJson).orElse(Json.Null.some),
+          "optionalObjectField" -> foo.optionalObjectField.map(buildInner).orElse(Json.Null.some),
+          "nullableField" -> foo.nullableField.fold(
+            none[Json],
+            Json.Null.some,
+            x => x.asJson.some
+          ),
+          "nullableObjectField" -> foo.nullableObjectField.fold(
+            none[Json],
+            Json.Null.some,
+            inner => buildInner(inner).some
+          )
+        )
+
+      assertEquals(Encoder[ExampleFoo].apply(foo), json)
+      assertEquals(Decoder[ExampleFoo].decodeJson(json), Right(foo))
+    }
+
+    // first, withDropNoneValues
+    forAll { foo: ExampleFoo =>
+      implicit val dropNoneValuesConfig: Configuration =
+        Configuration.default.withDropNoneValues
+
+      def buildInner(inner: ExampleInner): Json =
+        optFields(
+          "innerField" -> inner.innerField.asJson.some,
+          "innerOptionalField" -> inner.innerOptionalField.map(_.asJson),
+          "innerNullable" -> inner.innerNullable.fold(
+            none[Json],
+            Json.Null.some,
+            x => x.asJson.some
+          )
+        )
+
+      val json =
+        optFields(
+          "thisIsAField" -> foo.thisIsAField.asJson.some,
+          "optionalField" -> foo.optionalField.map(_.asJson),
+          "optionalObjectField" -> foo.optionalObjectField.map(buildInner),
+          "nullableField" -> foo.nullableField.fold(
+            none[Json],
+            Json.Null.some,
+            x => x.asJson.some
+          ),
+          "nullableObjectField" -> foo.nullableObjectField.fold(
+            none[Json],
+            Json.Null.some,
+            inner => buildInner(inner).some
+          )
+        )
+
+      assertEquals(Encoder[ExampleFoo].apply(foo), json)
+      assertEquals(Decoder[ExampleFoo].decodeJson(json), Right(foo))
     }
   }
 

@@ -47,7 +47,8 @@ object ReprAsObjectCodec {
     def configuredEncodeObject(a: HNil)(
       transformMemberNames: String => String,
       transformDiscriminator: String => String,
-      discriminator: Option[String]
+      discriminator: Option[String],
+      dropNoneValues: Boolean
     ): JsonObject = JsonObject.empty
   }
 }

@@ -48,7 +48,8 @@ class ConfigurableDeriver(val c: whitebox.Context)
   protected[this] override def encodeMethodArgs: List[Tree] = List(
     q"transformMemberNames: (_root_.java.lang.String => _root_.java.lang.String)",
     q"transformConstructorNames: (_root_.java.lang.String => _root_.java.lang.String)",
-    q"discriminator: _root_.scala.Option[_root_.java.lang.String]"
+    q"discriminator: _root_.scala.Option[_root_.java.lang.String]",
+    q"dropNoneValues: _root_.scala.Boolean"
   )
 
   protected[this] def decodeField(name: String, decode: TermName): Tree = q"""
@@ -87,8 +88,17 @@ class ConfigurableDeriver(val c: whitebox.Context)
     )
   """
 
-  protected[this] def encodeField(name: String, encode: TermName, value: TermName): Tree =
-    q"(transformMemberNames($name), $encode($value))"
+  protected[this] def encodeField(name: String, encode: TermName, value: TermName): Tree = q"""
+    if ($value == _root_.scala.None && dropNoneValues) {
+      _root_.scala.None
+    } else if ($value == _root_.io.circe.Nullable.Undefined) {
+      _root_.scala.None
+    } else if ($value == _root_.io.circe.Nullable.Null) {
+      _root_.scala.Some(_root_.scala.Tuple2(transformMemberNames($name), _root_.io.circe.Json.Null))
+    } else {
+      _root_.scala.Some(_root_.scala.Tuple2(transformMemberNames($name), $encode($value)))
+    }
+  """
 
   protected[this] def encodeSubtype(name: String, encode: TermName, value: TermName): Tree =
     q"addDiscriminator($encode, $value, transformConstructorNames($name), discriminator)"
