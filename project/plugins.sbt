@@ -1,6 +1,6 @@
 addSbtPlugin("com.typesafe.sbt" % "sbt-ghpages" % "0.6.3")
-addSbtPlugin("org.typelevel" % "sbt-typelevel-ci-release" % "0.4.22")
-addSbtPlugin("org.typelevel" % "sbt-typelevel-settings" % "0.4.22")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-ci-release" % "0.6.6")
+addSbtPlugin("org.typelevel" % "sbt-typelevel-settings" % "0.6.6")
 addSbtPlugin("org.portable-scala" % "sbt-scalajs-crossproject" % "1.3.2")
 addSbtPlugin("org.scala-js" % "sbt-scalajs" % "1.14.0")
 addSbtPlugin("org.portable-scala" % "sbt-scala-native-crossproject" % "1.3.2")
