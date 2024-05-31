@@ -6,7 +6,7 @@ val Scala213V = "2.13.7"
 val circeVersion = "0.14.6"
 val paradiseVersion = "2.1.1"
 
-val jawnVersion = "1.5.1"
+val jawnVersion = "1.6.0"
 val munitVersion = "0.7.29"
 val disciplineMunitVersion = "1.0.9"
 
