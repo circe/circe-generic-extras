@@ -1,9 +1,9 @@
 import sbtcrossproject.{ CrossType, crossProject }
 
-val Scala212V = "2.12.18"
-val Scala213V = "2.13.7"
+val Scala212V = "2.12.19"
+val Scala213V = "2.13.14"
 
-val circeVersion = "0.14.6"
+val circeVersion = "0.14.7"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.5.1"
@@ -44,7 +44,7 @@ ThisBuild / githubWorkflowAddedJobs ++= Seq(
   )
 )
 
-val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
+//val docMappingsApiDir = settingKey[String]("Subdirectory in site target directory for API docs")
 
 lazy val root =
   tlCrossRootProject.aggregate(genericExtras, benchmarks)
@@ -72,8 +72,8 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       } else Nil
     ),
     testFrameworks := List(new TestFramework("munit.Framework")), // Override setting so Scalatest is disabled
-    docMappingsApiDir := "api",
-    addMappingsToSiteDir(Compile / packageDoc / mappings, docMappingsApiDir),
+    //docMappingsApiDir := "api",
+    //addMappingsToSiteDir(Compile / packageDoc / mappings, docMappingsApiDir),
     scalacOptions ++= {
       if (scalaBinaryVersion.value == "2.13") Seq("-Ymacro-annotations") else Seq.empty
     },
@@ -107,5 +107,6 @@ ThisBuild / licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/
 ThisBuild / developers := List(
   Developer("travisbrown", "Travis Brown", "travisrobertbrown@gmail.com", url("https://twitter.com/travisbrown")),
   Developer("zmccoy", "Zach McCoy", "zachabbott@gmail.com", url("https://twitter.com/zachamccoy")),
-  Developer("zarthross", "Darren Gibson", "zarthross@gmail.com", url("https://twitter.com/zarthross"))
+  Developer("zarthross", "Darren Gibson", "zarthross@gmail.com", url("https://twitter.com/zarthross")),
+  Developer("hamnis", "Erlend Hamnaberg", "erlend@hamnaberg.net", url("https://github.com/hamnis"))
 )
