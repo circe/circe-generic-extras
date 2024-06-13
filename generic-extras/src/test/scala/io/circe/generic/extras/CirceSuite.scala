@@ -3,10 +3,8 @@ package io.circe.generic.extras
 import cats.instances._
 import cats.syntax._
 import io.circe.testing.{ ArbitraryInstances, EqInstances }
-import org.typelevel.discipline.Laws
 
-import scala.language.implicitConversions
-import munit.{ DisciplineSuite, Location, ScalaCheckSuite }
+import munit.DisciplineSuite
 
 /**
  * An opinionated stack of traits to improve consistency and reduce boilerplate in circe tests.

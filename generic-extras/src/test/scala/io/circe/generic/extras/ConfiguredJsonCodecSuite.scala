@@ -7,8 +7,6 @@ import io.circe.testing.CodecTests
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{ Arbitrary, Gen }
 
-import scala.Console.in
-
 object ConfiguredJsonCodecSuite {
   implicit val customConfig: Configuration =
     Configuration.default.withSnakeCaseMemberNames.withDefaults.withDiscriminator("type").withSnakeCaseConstructorNames

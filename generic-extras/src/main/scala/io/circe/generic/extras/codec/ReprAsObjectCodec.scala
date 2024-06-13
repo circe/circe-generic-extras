@@ -7,7 +7,6 @@ import io.circe.generic.extras.decoding.ReprDecoder
 import io.circe.generic.extras.encoding.ReprAsObjectEncoder
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
-import scala.language.experimental.macros
 import shapeless.HNil
 
 /**

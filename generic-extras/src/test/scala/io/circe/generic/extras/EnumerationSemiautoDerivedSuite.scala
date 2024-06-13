@@ -29,11 +29,13 @@ class EnumerationSemiautoDerivedSuite extends CirceSuite {
 
   test("deriveEnumerationDecoder should not compile on an ADT with case classes") {
     implicit val config: Configuration = Configuration.default
+    val _ = config
     illTyped("deriveEnumerationDecoder[ExtendedCardinalDirection]")
   }
 
-  test("it should respect Configuration") {
+  test("it should respect Configuration snake-case") {
     implicit val config: Configuration = Configuration.default.withSnakeCaseConstructorNames
+    val _ = config
     val decodeMary = deriveEnumerationDecoder[Mary]
     val expected = json""""little_lamb""""
     assert(decodeMary.decodeJson(expected) === Right(LittleLamb))
@@ -41,13 +43,15 @@ class EnumerationSemiautoDerivedSuite extends CirceSuite {
 
   test("deriveEnumerationEncoder should not compile on an ADT with case classes") {
     implicit val config: Configuration = Configuration.default
+    val _ = config
     illTyped("deriveEnumerationEncoder[ExtendedCardinalDirection]")
   }
 
-  test("it should respect Configuration") {
-    implicit val config: Configuration = Configuration.default.withSnakeCaseConstructorNames
+  test("it should respect Configuration kebab-case") {
+    implicit val config: Configuration = Configuration.default.withKebabCaseConstructorNames
+    val _ = config
     val encodeMary = deriveEnumerationEncoder[Mary]
-    val expected = json""""little_lamb""""
+    val expected = json""""little-lamb""""
     assert(encodeMary(LittleLamb) === expected)
   }
 }

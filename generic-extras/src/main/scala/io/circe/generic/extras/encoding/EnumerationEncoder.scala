@@ -2,7 +2,8 @@ package io.circe.generic.extras.encoding
 
 import io.circe.{ Encoder, Json }
 import io.circe.generic.extras.Configuration
-import scala.annotation.implicitNotFound
+
+import scala.annotation.{ implicitNotFound, nowarn }
 import shapeless.{ :+:, CNil, Coproduct, HNil, Inl, Inr, LabelledGeneric, Witness }
 import shapeless.labelled.FieldType
 
@@ -22,12 +23,12 @@ object EnumerationEncoder {
 
   implicit def encodeEnumerationCCons[K <: Symbol, V, R <: Coproduct](implicit
     witK: Witness.Aux[K],
-    gen: LabelledGeneric.Aux[V, HNil],
+    @nowarn gen: LabelledGeneric.Aux[V, HNil],
     encodeR: EnumerationEncoder[R],
     config: Configuration = Configuration.default
   ): EnumerationEncoder[FieldType[K, V] :+: R] = new EnumerationEncoder[FieldType[K, V] :+: R] {
     def apply(a: FieldType[K, V] :+: R): Json = a match {
-      case Inl(l) => Json.fromString(config.transformConstructorNames(witK.value.name))
+      case Inl(_) => Json.fromString(config.transformConstructorNames(witK.value.name))
       case Inr(r) => encodeR(r)
     }
   }

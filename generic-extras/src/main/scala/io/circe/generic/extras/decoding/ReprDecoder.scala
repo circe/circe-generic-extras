@@ -6,7 +6,6 @@ import io.circe.Json.JNull
 import io.circe.generic.extras.ConfigurableDeriver
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
-import scala.language.experimental.macros
 import shapeless.HNil
 
 /**
@@ -51,7 +50,7 @@ abstract class ReprDecoder[A] extends Decoder[A] {
       case (true, Some(d: B @unchecked)) => Right(d)
       case (_, Some(d: B @unchecked)) =>
         decoder.tryDecode(c) match {
-          case l @ Left(_) if c.focus.contains(JNull) =>
+          case Left(_) if c.focus.contains(JNull) =>
             Right(d)
           case otherwise =>
             otherwise
@@ -70,7 +69,7 @@ abstract class ReprDecoder[A] extends Decoder[A] {
       case (true, Some(d: B @unchecked)) => Validated.valid(d)
       case (_, Some(d: B @unchecked)) =>
         decoder.tryDecodeAccumulating(c) match {
-          case l @ Validated.Invalid(_) if c.focus.contains(JNull) =>
+          case Validated.Invalid(_) if c.focus.contains(JNull) =>
             Validated.valid(d)
           case otherwise =>
             otherwise

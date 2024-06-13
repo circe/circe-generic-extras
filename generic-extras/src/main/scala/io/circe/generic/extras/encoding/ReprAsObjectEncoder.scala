@@ -1,8 +1,8 @@
 package io.circe.generic.extras.encoding
+
 import io.circe.{ Encoder, Json, JsonObject }
 import io.circe.generic.extras.ConfigurableDeriver
 import scala.annotation.implicitNotFound
-import scala.language.experimental.macros
 
 /**
  * An encoder for a generic representation of a case class or ADT.

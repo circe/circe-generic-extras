@@ -72,8 +72,8 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       } else Nil
     ),
     testFrameworks := List(new TestFramework("munit.Framework")), // Override setting so Scalatest is disabled
-    //docMappingsApiDir := "api",
-    //addMappingsToSiteDir(Compile / packageDoc / mappings, docMappingsApiDir),
+    // docMappingsApiDir := "api",
+    // addMappingsToSiteDir(Compile / packageDoc / mappings, docMappingsApiDir),
     scalacOptions ++= {
       if (scalaBinaryVersion.value == "2.13") Seq("-Ymacro-annotations") else Seq.empty
     },

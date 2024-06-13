@@ -49,7 +49,7 @@ class UnwrappedSemiautoDerivedSuite extends CirceSuite {
   }
 
   property("it should fail decoding incompatible JSON") {
-    forAll { (i: Int, s: String) =>
+    forAll { (i: Int) =>
       val json = Json.fromInt(i)
       val expected = Left(DecodingFailure(DecodingFailure.Reason.WrongTypeExpectation("string", json), List()))
 

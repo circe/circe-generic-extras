@@ -35,7 +35,7 @@ object EnumerationDecoder {
             case Right(v)  => Right(Inr(v))
             case Left(err) => Left(err)
           }
-        case Left(err) => Left(DecodingFailure("Enumeration", c.history))
+        case Left(_) => Left(DecodingFailure("Enumeration", c.history))
       }
   }
 

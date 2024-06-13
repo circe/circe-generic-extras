@@ -1,9 +1,11 @@
 package io.circe.generic.extras
 
 import io.circe.generic.util.macros.JsonCodecMacros
-import scala.language.experimental.macros
+
+import scala.annotation.nowarn
 import scala.reflect.macros.blackbox
 
+@nowarn("cat=unused")
 class ConfiguredJsonCodec(
   encodeOnly: Boolean = false,
   decodeOnly: Boolean = false

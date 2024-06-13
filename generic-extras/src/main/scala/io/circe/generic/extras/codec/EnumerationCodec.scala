@@ -36,10 +36,10 @@ object EnumerationCodec {
             case Right(v)  => Right(Inr(v))
             case Left(err) => Left(err)
           }
-        case Left(err) => Left(DecodingFailure("Enumeration", c.history))
+        case Left(_) => Left(DecodingFailure("Enumeration", c.history))
       }
     def apply(a: FieldType[K, V] :+: R): Json = a match {
-      case Inl(l) => Json.fromString(config.transformConstructorNames(witK.value.name))
+      case Inl(_) => Json.fromString(config.transformConstructorNames(witK.value.name))
       case Inr(r) => codecForR(r)
     }
   }
