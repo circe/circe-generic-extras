@@ -103,7 +103,7 @@ lazy val benchmarks = project
   .dependsOn(genericExtras.jvm)
   .enablePlugins(JmhPlugin, NoPublishPlugin)
 
-ThisBuild / licenses := Seq("Apache 2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0"))
+ThisBuild / startYear := Some(2019)
 ThisBuild / developers := List(
   Developer("travisbrown", "Travis Brown", "travisrobertbrown@gmail.com", url("https://twitter.com/travisbrown")),
   Developer("zmccoy", "Zach McCoy", "zachabbott@gmail.com", url("https://twitter.com/zachamccoy")),
