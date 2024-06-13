@@ -11,7 +11,8 @@ val munitVersion = "0.7.29"
 val disciplineMunitVersion = "1.0.9"
 
 ThisBuild / tlBaseVersion := "0.14"
-ThisBuild / tlCiReleaseTags := false
+ThisBuild / tlCiReleaseTags := true
+ThisBuild / tlFatalWarnings := false // we currently have a lot of warnings that will need to be fixed
 
 ThisBuild / organization := "io.circe"
 ThisBuild / crossScalaVersions := List(Scala212V, Scala213V)
@@ -34,13 +35,19 @@ ThisBuild / githubWorkflowAddedJobs ++= Seq(
         UseRef.Public(
           "codecov",
           "codecov-action",
-          "v2"
+          "v4"
         ),
         params = Map(
           "flags" -> List("${{matrix.scala}}", "${{matrix.java}}").mkString(",")
         )
       )
     )
+  )
+)
+
+def do_configure(project: Project) = project.settings(
+  Seq(
+    Test / scalacOptions -= "-Xfatal-warnings"
   )
 )
 
@@ -90,6 +97,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   .nativeSettings(
     tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.3").toMap
   )
+  .configure(do_configure)
 
 lazy val benchmarks = project
   .in(file("benchmarks"))

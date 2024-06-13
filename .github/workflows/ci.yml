@@ -315,6 +315,6 @@ jobs:
 
       - run: sbt '++ ${{ matrix.scala }}' coverage rootJVM/test coverageAggregate
 
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v4
         with:
           flags: ${{matrix.scala}},${{matrix.java}}
