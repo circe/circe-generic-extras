@@ -16,7 +16,9 @@
 
 package io.circe.generic.extras
 
-import io.circe.{ Codec, Decoder, Encoder }
+import io.circe.Codec
+import io.circe.Decoder
+import io.circe.Encoder
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
 import io.circe.testing.CodecTests

@@ -16,16 +16,27 @@
 
 package io.circe.generic.extras.codec
 
-import io.circe.{ Decoder, Encoder, HCursor, JsonObject }
+import io.circe.Decoder
+import io.circe.Encoder
+import io.circe.HCursor
+import io.circe.JsonObject
 import io.circe.generic.codec.DerivedAsObjectCodec
-import io.circe.generic.extras.{ Configuration, ExtrasDecoder, JsonKey }
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.ExtrasDecoder
+import io.circe.generic.extras.JsonKey
 import io.circe.generic.extras.decoding.ConfiguredDecoder
 import io.circe.generic.extras.encoding.ConfiguredAsObjectEncoder
 import io.circe.generic.extras.util.RecordToMap
-import scala.annotation.implicitNotFound
-import shapeless.{ Annotations, Coproduct, Default, HList, LabelledGeneric, Lazy }
+import shapeless.Annotations
+import shapeless.Coproduct
+import shapeless.Default
+import shapeless.HList
+import shapeless.LabelledGeneric
+import shapeless.Lazy
 import shapeless.ops.hlist.ToTraversable
 import shapeless.ops.record.Keys
+
+import scala.annotation.implicitNotFound
 
 @implicitNotFound(
   """Could not find ConfiguredAsObjectCodec for type ${A}.

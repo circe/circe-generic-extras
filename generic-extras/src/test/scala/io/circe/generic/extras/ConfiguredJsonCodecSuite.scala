@@ -17,11 +17,13 @@
 package io.circe.generic.extras
 
 import cats.kernel.Eq
-import io.circe.{ Decoder, Encoder }
+import io.circe.Decoder
+import io.circe.Encoder
 import io.circe.literal._
 import io.circe.testing.CodecTests
+import org.scalacheck.Arbitrary
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
-import org.scalacheck.{ Arbitrary, Gen }
 
 object ConfiguredJsonCodecSuite {
   implicit val customConfig: Configuration =

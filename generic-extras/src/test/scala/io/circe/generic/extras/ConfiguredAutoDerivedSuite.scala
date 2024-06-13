@@ -18,13 +18,17 @@ package io.circe.generic.extras
 
 import cats.data.Validated
 import cats.kernel.Eq
-import io.circe.{ Decoder, DecodingFailure, Encoder, Json }
 import io.circe.CursorOp.DownField
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.Encoder
+import io.circe.Json
 import io.circe.generic.extras.auto._
 import io.circe.literal._
 import io.circe.testing.CodecTests
-import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 
 import examples._

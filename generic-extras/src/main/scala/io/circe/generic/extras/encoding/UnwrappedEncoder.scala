@@ -16,9 +16,14 @@
 
 package io.circe.generic.extras.encoding
 
-import io.circe.{ Encoder, Json }
+import io.circe.Encoder
+import io.circe.Json
+import shapeless.::
+import shapeless.Generic
+import shapeless.HNil
+import shapeless.Lazy
+
 import scala.annotation.implicitNotFound
-import shapeless.{ ::, Generic, HNil, Lazy }
 
 @implicitNotFound(
   """Could not find UnwrappedEncoder for type ${A}.

@@ -19,9 +19,13 @@ package io.circe.generic.extras
 import cats.instances.AllInstances
 import cats.kernel.Eq
 import cats.syntax.functor._
-import io.circe.{ Decoder, DecodingFailure, Encoder, Json }
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.Encoder
+import io.circe.Json
 import io.circe.testing.ArbitraryInstances
-import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck.Arbitrary
+import org.scalacheck.Gen
 
 package object examples extends AllInstances with ArbitraryInstances {
   val glossary: Json = Json.obj(

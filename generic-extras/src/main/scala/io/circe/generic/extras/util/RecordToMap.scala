@@ -16,9 +16,13 @@
 
 package io.circe.generic.extras.util
 
-import scala.collection.immutable.Map
-import shapeless.{ ::, HList, HNil, Witness }
+import shapeless.::
+import shapeless.HList
+import shapeless.HNil
+import shapeless.Witness
 import shapeless.labelled.FieldType
+
+import scala.collection.immutable.Map
 
 abstract class RecordToMap[R <: HList] {
   def apply(r: R): Map[String, Any]

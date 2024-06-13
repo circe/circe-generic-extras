@@ -18,13 +18,19 @@ package io.circe.generic.extras.encoding
 
 import io.circe.JsonObject
 import io.circe.generic.encoding.DerivedAsObjectEncoder
-import io.circe.generic.extras.{ Configuration, JsonKey }
+import io.circe.generic.extras.Configuration
+import io.circe.generic.extras.JsonKey
+import shapeless.Annotations
+import shapeless.Coproduct
+import shapeless.HList
+import shapeless.LabelledGeneric
+import shapeless.Lazy
+import shapeless.ops.hlist.ToTraversable
+import shapeless.ops.record.Keys
+
 import java.util.concurrent.ConcurrentHashMap
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
-import shapeless.{ Annotations, Coproduct, HList, LabelledGeneric, Lazy }
-import shapeless.ops.hlist.ToTraversable
-import shapeless.ops.record.Keys
 
 @implicitNotFound(
   """Could not find ConfiguredAsObjectEncoder for type ${A}.

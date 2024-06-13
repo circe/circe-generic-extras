@@ -16,9 +16,14 @@
 
 package io.circe.generic.extras.decoding
 
-import io.circe.{ Decoder, HCursor }
+import io.circe.Decoder
+import io.circe.HCursor
+import shapeless.::
+import shapeless.Generic
+import shapeless.HNil
+import shapeless.Lazy
+
 import scala.annotation.implicitNotFound
-import shapeless.{ ::, Generic, HNil, Lazy }
 
 @implicitNotFound(
   """Could not find UnwrappedDecoder for type ${A}.

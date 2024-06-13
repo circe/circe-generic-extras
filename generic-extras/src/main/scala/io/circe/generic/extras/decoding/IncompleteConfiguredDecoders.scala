@@ -16,14 +16,18 @@
 
 package io.circe.generic.extras.decoding
 
-import io.circe.{ Decoder, HCursor }
+import io.circe.Decoder
+import io.circe.HCursor
 import io.circe.generic.extras.Configuration
 import io.circe.generic.extras.util.RecordToMap
 import io.circe.generic.util.PatchWithOptions
-import scala.collection.immutable.Map
-import shapeless.{ Default, HList, LabelledGeneric }
+import shapeless.Default
+import shapeless.HList
+import shapeless.LabelledGeneric
 import shapeless.ops.function.FnFromProduct
 import shapeless.ops.record.RemoveAll
+
+import scala.collection.immutable.Map
 
 private[circe] trait IncompleteConfiguredDecoders {
   implicit final def decodeIncompleteCaseClass[F, P <: HList, A, D <: HList, T <: HList, R <: HList](implicit

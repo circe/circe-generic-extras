@@ -18,8 +18,8 @@ package io.circe.generic.extras
 
 import cats.instances._
 import cats.syntax._
-import io.circe.testing.{ ArbitraryInstances, EqInstances }
-
+import io.circe.testing.ArbitraryInstances
+import io.circe.testing.EqInstances
 import munit.DisciplineSuite
 
 /**

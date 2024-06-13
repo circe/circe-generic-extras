@@ -16,12 +16,21 @@
 
 package io.circe.generic.extras.encoding
 
-import io.circe.{ Encoder, Json }
+import io.circe.Encoder
+import io.circe.Json
 import io.circe.generic.extras.Configuration
-
-import scala.annotation.{ implicitNotFound, nowarn }
-import shapeless.{ :+:, CNil, Coproduct, HNil, Inl, Inr, LabelledGeneric, Witness }
+import shapeless.:+:
+import shapeless.CNil
+import shapeless.Coproduct
+import shapeless.HNil
+import shapeless.Inl
+import shapeless.Inr
+import shapeless.LabelledGeneric
+import shapeless.Witness
 import shapeless.labelled.FieldType
+
+import scala.annotation.implicitNotFound
+import scala.annotation.nowarn
 
 @implicitNotFound(
   """Could not find EnumerationEncoder for type ${A}.

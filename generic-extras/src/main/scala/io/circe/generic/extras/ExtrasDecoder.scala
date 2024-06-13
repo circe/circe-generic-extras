@@ -16,7 +16,9 @@
 
 package io.circe.generic.extras
 
-import io.circe.{ Decoder, DecodingFailure, HCursor }
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.HCursor
 
 /**
  * A derived decoder that includes additional functionality related to configuration.

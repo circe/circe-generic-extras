@@ -17,16 +17,22 @@
 package io.circe.generic.extras
 
 import cats.kernel.Eq
-import io.circe.{ Codec, Decoder, DecodingFailure, Encoder, Json }
+import io.circe.Codec
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.Encoder
+import io.circe.Json
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
-import io.circe.testing.CodecTests
 import io.circe.syntax._
-import org.scalacheck.{ Arbitrary, Gen }
+import io.circe.testing.CodecTests
+import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
-import shapeless.Witness
-import shapeless.labelled.{ FieldType, field }
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
+import shapeless.Witness
+import shapeless.labelled.FieldType
+import shapeless.labelled.field
 
 import examples._
 

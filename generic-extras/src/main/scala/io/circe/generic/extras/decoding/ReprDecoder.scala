@@ -17,12 +17,16 @@
 package io.circe.generic.extras.decoding
 
 import cats.data.Validated
-import io.circe.{ ACursor, Decoder, DecodingFailure, HCursor }
+import io.circe.ACursor
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.HCursor
 import io.circe.Json.JNull
 import io.circe.generic.extras.ConfigurableDeriver
+import shapeless.HNil
+
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
-import shapeless.HNil
 
 /**
  * A decoder for a generic representation of a case class or ADT.

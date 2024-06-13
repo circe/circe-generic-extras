@@ -16,7 +16,8 @@
 
 package io.circe.generic.extras
 
-import io.circe.{ Decoder, Encoder }
+import io.circe.Decoder
+import io.circe.Encoder
 import io.circe.export.Exported
 import io.circe.generic.extras.decoding.ConfiguredDecoder
 import io.circe.generic.extras.encoding.ConfiguredAsObjectEncoder

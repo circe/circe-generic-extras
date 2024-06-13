@@ -17,7 +17,8 @@
 package io.circe.generic.extras.examples
 
 import cats.kernel.Eq
-import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck.Arbitrary
+import org.scalacheck.Gen
 
 sealed trait CardinalDirection
 case object North extends CardinalDirection

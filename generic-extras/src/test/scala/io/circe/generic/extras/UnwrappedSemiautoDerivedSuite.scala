@@ -20,8 +20,9 @@ import cats.Eq
 import io.circe._
 import io.circe.generic.extras.semiauto._
 import io.circe.testing.CodecTests
-import org.scalacheck.{ Arbitrary, Gen }
+import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 
 object UnwrappedSemiautoDerivedSuite {

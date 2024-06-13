@@ -17,13 +17,17 @@
 package io.circe.generic.extras.codec
 
 import cats.data.Validated
-import io.circe.{ Decoder, DecodingFailure, HCursor, JsonObject }
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.HCursor
+import io.circe.JsonObject
 import io.circe.generic.extras.ConfigurableDeriver
 import io.circe.generic.extras.decoding.ReprDecoder
 import io.circe.generic.extras.encoding.ReprAsObjectEncoder
+import shapeless.HNil
+
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
-import shapeless.HNil
 
 /**
  * A codec for a generic representation of a case class or ADT.

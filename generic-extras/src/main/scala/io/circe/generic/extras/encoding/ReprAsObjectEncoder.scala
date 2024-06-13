@@ -16,8 +16,11 @@
 
 package io.circe.generic.extras.encoding
 
-import io.circe.{ Encoder, Json, JsonObject }
+import io.circe.Encoder
+import io.circe.Json
+import io.circe.JsonObject
 import io.circe.generic.extras.ConfigurableDeriver
+
 import scala.annotation.implicitNotFound
 
 /**

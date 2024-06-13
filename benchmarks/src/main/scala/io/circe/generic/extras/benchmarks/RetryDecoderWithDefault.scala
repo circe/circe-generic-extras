@@ -20,10 +20,11 @@ package benchmarks
 
 import io.circe.generic.extras.semiauto._
 import io.circe.syntax._
-import java.util.UUID
 import org.openjdk.jmh.annotations._
-import scala.annotation.tailrec
+
+import java.util.UUID
 import java.util.concurrent.TimeUnit
+import scala.annotation.tailrec
 
 @BenchmarkMode(Array(Mode.AverageTime))
 @OutputTimeUnit(TimeUnit.MILLISECONDS)

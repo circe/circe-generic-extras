@@ -16,11 +16,24 @@
 
 package io.circe.generic.extras.codec
 
-import io.circe.{ Codec, Decoder, DecodingFailure, HCursor, Json }
+import io.circe.Codec
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.HCursor
+import io.circe.Json
 import io.circe.generic.extras.Configuration
+import shapeless.:+:
+import shapeless.CNil
+import shapeless.Coproduct
+import shapeless.HNil
+import shapeless.Inl
+import shapeless.Inr
+import shapeless.LabelledGeneric
+import shapeless.Witness
+import shapeless.labelled.FieldType
+import shapeless.labelled.field
+
 import scala.annotation.implicitNotFound
-import shapeless.{ :+:, CNil, Coproduct, HNil, Inl, Inr, LabelledGeneric, Witness }
-import shapeless.labelled.{ FieldType, field }
 
 @implicitNotFound(
   """Could not find EnumerationCodec for type ${A}.

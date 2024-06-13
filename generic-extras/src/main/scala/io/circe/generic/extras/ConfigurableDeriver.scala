@@ -16,10 +16,14 @@
 
 package io.circe.generic.extras
 
-import io.circe.generic.extras.codec.{ ConfiguredAsObjectCodec, ReprAsObjectCodec }
-import io.circe.generic.extras.decoding.{ ConfiguredDecoder, ReprDecoder }
-import io.circe.generic.extras.encoding.{ ConfiguredAsObjectEncoder, ReprAsObjectEncoder }
+import io.circe.generic.extras.codec.ConfiguredAsObjectCodec
+import io.circe.generic.extras.codec.ReprAsObjectCodec
+import io.circe.generic.extras.decoding.ConfiguredDecoder
+import io.circe.generic.extras.decoding.ReprDecoder
+import io.circe.generic.extras.encoding.ConfiguredAsObjectEncoder
+import io.circe.generic.extras.encoding.ReprAsObjectEncoder
 import io.circe.generic.util.macros.DerivationMacros
+
 import scala.reflect.macros.whitebox
 
 class ConfigurableDeriver(val c: whitebox.Context)
