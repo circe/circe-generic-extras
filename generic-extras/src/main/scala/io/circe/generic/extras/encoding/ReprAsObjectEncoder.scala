@@ -20,7 +20,8 @@ trait ReprAsObjectEncoder[A] extends Encoder.AsObject[A] {
   def configuredEncodeObject(a: A)(
     transformMemberNames: String => String,
     transformDiscriminator: String => String,
-    discriminator: Option[String]
+    discriminator: Option[String],
+    dropNoneValues: Boolean
   ): JsonObject
 
   final protected[this] def addDiscriminator[B](
@@ -37,7 +38,8 @@ trait ReprAsObjectEncoder[A] extends Encoder.AsObject[A] {
       }
   }
 
-  final def encodeObject(a: A): JsonObject = configuredEncodeObject(a)(Predef.identity, Predef.identity, None)
+  final def encodeObject(a: A): JsonObject =
+    configuredEncodeObject(a)(Predef.identity, Predef.identity, None, dropNoneValues = false)
 }
 
 object ReprAsObjectEncoder {
