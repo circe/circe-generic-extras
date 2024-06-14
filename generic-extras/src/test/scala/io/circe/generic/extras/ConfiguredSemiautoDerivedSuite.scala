@@ -1,16 +1,38 @@
+/*
+ * Copyright 2019 circe
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.circe.generic.extras
 
 import cats.kernel.Eq
-import io.circe.{ Codec, Decoder, DecodingFailure, Encoder, Json }
+import io.circe.Codec
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.Encoder
+import io.circe.Json
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
-import io.circe.testing.CodecTests
 import io.circe.syntax._
-import org.scalacheck.{ Arbitrary, Gen }
+import io.circe.testing.CodecTests
+import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
-import shapeless.Witness
-import shapeless.labelled.{ FieldType, field }
+import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
+import shapeless.Witness
+import shapeless.labelled.FieldType
+import shapeless.labelled.field
 
 import examples._
 

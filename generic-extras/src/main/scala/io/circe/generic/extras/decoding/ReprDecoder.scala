@@ -1,13 +1,32 @@
+/*
+ * Copyright 2019 circe
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package io.circe.generic.extras.decoding
 
 import cats.data.Validated
-import io.circe.{ ACursor, Decoder, DecodingFailure, HCursor }
+import io.circe.ACursor
+import io.circe.Decoder
+import io.circe.DecodingFailure
+import io.circe.HCursor
 import io.circe.Json.JNull
 import io.circe.generic.extras.ConfigurableDeriver
+import shapeless.HNil
+
 import scala.annotation.implicitNotFound
 import scala.collection.immutable.Map
-import scala.language.experimental.macros
-import shapeless.HNil
 
 /**
  * A decoder for a generic representation of a case class or ADT.
@@ -51,7 +70,7 @@ abstract class ReprDecoder[A] extends Decoder[A] {
       case (true, Some(d: B @unchecked)) => Right(d)
       case (_, Some(d: B @unchecked)) =>
         decoder.tryDecode(c) match {
-          case l @ Left(_) if c.focus.contains(JNull) =>
+          case Left(_) if c.focus.contains(JNull) =>
             Right(d)
           case otherwise =>
             otherwise
@@ -70,7 +89,7 @@ abstract class ReprDecoder[A] extends Decoder[A] {
       case (true, Some(d: B @unchecked)) => Validated.valid(d)
       case (_, Some(d: B @unchecked)) =>
         decoder.tryDecodeAccumulating(c) match {
-          case l @ Validated.Invalid(_) if c.focus.contains(JNull) =>
+          case Validated.Invalid(_) if c.focus.contains(JNull) =>
             Validated.valid(d)
           case otherwise =>
             otherwise
