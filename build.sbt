@@ -7,8 +7,8 @@ val circeVersion = "0.14.9"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.6.0"
-val munitVersion = "0.7.29"
-val disciplineMunitVersion = "1.0.9"
+val munitVersion = "1.0.0"
+val disciplineMunitVersion = "2.0.0"
 
 ThisBuild / tlBaseVersion := "0.14"
 ThisBuild / tlCiReleaseTags := true
