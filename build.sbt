@@ -95,7 +95,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   )
   .jsSettings()
   .nativeSettings(
-    tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.3").toMap
+    tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.4").toMap
   )
   .configure(do_configure)
 
