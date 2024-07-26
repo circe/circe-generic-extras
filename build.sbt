@@ -3,12 +3,12 @@ import sbtcrossproject.{ CrossType, crossProject }
 val Scala212V = "2.12.19"
 val Scala213V = "2.13.14"
 
-val circeVersion = "0.14.7"
+val circeVersion = "0.14.9"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.6.0"
-val munitVersion = "0.7.29"
-val disciplineMunitVersion = "1.0.9"
+val munitVersion = "1.0.0"
+val disciplineMunitVersion = "2.0.0"
 
 ThisBuild / tlBaseVersion := "0.14"
 ThisBuild / tlCiReleaseTags := true
@@ -95,7 +95,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   )
   .jsSettings()
   .nativeSettings(
-    tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.3").toMap
+    tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.4").toMap
   )
   .configure(do_configure)
 
