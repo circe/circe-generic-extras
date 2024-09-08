@@ -3,7 +3,7 @@ import sbtcrossproject.{ CrossType, crossProject }
 val Scala212V = "2.12.19"
 val Scala213V = "2.13.14"
 
-val circeVersion = "0.14.9"
+val circeVersion = "0.14.10"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.6.0"
