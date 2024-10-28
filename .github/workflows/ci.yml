@@ -42,8 +42,7 @@ jobs:
     timeout-minutes: 60
     steps:
       - name: Install sbt
-        if: contains(runner.os, 'macos')
-        run: brew install sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
@@ -132,8 +131,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install sbt
-        if: contains(runner.os, 'macos')
-        run: brew install sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
@@ -252,7 +250,7 @@ jobs:
 
   dependency-submission:
     name: Submit Dependencies
-    if: github.event_name != 'pull_request'
+    if: github.event.repository.fork == false && github.event_name != 'pull_request'
     strategy:
       matrix:
         os: [ubuntu-latest]
@@ -260,8 +258,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - name: Install sbt
-        if: contains(runner.os, 'macos')
-        run: brew install sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
@@ -305,10 +302,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-        scala: [2.13.14]
+        scala: [2.12, 2.13]
         java: [temurin@11]
     runs-on: ${{ matrix.os }}
     steps:
+      - name: Install sbt
+        uses: sbt/setup-sbt@v1
+
       - name: Checkout current branch (fast)
         uses: actions/checkout@v4
 
@@ -327,6 +327,6 @@ jobs:
 
       - run: sbt '++ ${{ matrix.scala }}' coverage rootJVM/test coverageAggregate
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v3
         with:
-          flags: ${{matrix.scala}},${{matrix.java}}
+          flags: ${{matrix.scala}}
