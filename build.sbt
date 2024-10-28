@@ -22,28 +22,7 @@ ThisBuild / githubWorkflowJavaVersions := Seq("8", "17").map(JavaSpec.temurin)
 
 ThisBuild / tlCiScalafmtCheck := true
 
-ThisBuild / githubWorkflowAddedJobs ++= Seq(
-  WorkflowJob(
-    id = "coverage",
-    name = "Generate coverage report",
-    scalas = List(Scala213V),
-    steps = List(WorkflowStep.Checkout) ++ WorkflowStep.SetupJava(
-      List(githubWorkflowJavaVersions.value.last)
-    ) ++ githubWorkflowGeneratedCacheSteps.value ++ List(
-      WorkflowStep.Sbt(List("coverage", "rootJVM/test", "coverageAggregate")),
-      WorkflowStep.Use(
-        UseRef.Public(
-          "codecov",
-          "codecov-action",
-          "v4"
-        ),
-        params = Map(
-          "flags" -> List("${{matrix.scala}}", "${{matrix.java}}").mkString(",")
-        )
-      )
-    )
-  )
-)
+ThisBuild / circeRootOfCodeCoverage := Some("rootJVM")
 
 def do_configure(project: Project) = project.settings(
   Seq(
