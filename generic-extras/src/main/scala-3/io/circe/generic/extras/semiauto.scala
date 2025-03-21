@@ -4,13 +4,16 @@ import io.circe.*
 import io.circe.derivation.{Configuration as CoreConfiguration, *}
 import scala.deriving.Mirror
 
+// ExtrasCodec and friends are out of scope
+// patch / incomplete derivation through `deriveFor` / `deriveConfiguredFor` is not supported
+
 object semiauto {
-    inline final def deriveConfiguredCodec[A](using m: Mirror.Of[A], config: Configuration): Codec[A] = {
+    inline final def deriveConfiguredCodec[A](using m: Mirror.Of[A], config: Configuration): Codec.AsObject[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredCodec.derived[A]
     }
 
-    inline final def deriveConfiguredEncoder[A](using m: Mirror.Of[A], config: Configuration): Encoder[A] = {
+    inline final def deriveConfiguredEncoder[A](using m: Mirror.Of[A], config: Configuration): Encoder.AsObject[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredEncoder.derived[A]
     }
