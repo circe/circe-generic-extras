@@ -5,13 +5,13 @@ import scala.compiletime.*
 import scala.quoted.*
 
 private[extras] object UnwrappedDerivationMacros {
-  inline final def deriveUnwrappedCodec[A <: AnyVal]: Codec[A] = 
+  inline final def deriveUnwrappedCodec[A]: Codec[A] = 
     Codec.from(
         decodeA = deriveUnwrappedDecoder[A],
         encodeA = deriveUnwrappedEncoder[A]
     )
 
-  inline final def deriveUnwrappedDecoder[A <: AnyVal]: Decoder[A] = ${ deriveUnwrappedDecoderImpl[A] }
+  inline final def deriveUnwrappedDecoder[A]: Decoder[A] = ${ deriveUnwrappedDecoderImpl[A] }
 
   private def deriveUnwrappedDecoderImpl[A: Type](using Quotes): Expr[Decoder[A]] = {
     import quotes.reflect.*
@@ -36,7 +36,7 @@ private[extras] object UnwrappedDerivationMacros {
     }
   }
 
-  inline final def deriveUnwrappedEncoder[A <: AnyVal]: Encoder[A] = ${ deriveUnwrappedEncoderImpl[A] }
+  inline final def deriveUnwrappedEncoder[A]: Encoder[A] = ${ deriveUnwrappedEncoderImpl[A] }
 
   private def deriveUnwrappedEncoderImpl[A: Type](using Quotes): Expr[Encoder[A]] = {
     import quotes.reflect.*

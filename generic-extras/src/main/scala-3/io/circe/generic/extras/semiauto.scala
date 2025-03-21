@@ -5,32 +5,32 @@ import io.circe.derivation.{Configuration as CoreConfiguration, *}
 import scala.deriving.Mirror
 
 object semiauto {
-    inline final def deriveConfiguredCodec[A](using config: Configuration, m: Mirror.Of[A]): Codec[A] = {
+    inline final def deriveConfiguredCodec[A](using m: Mirror.Of[A], config: Configuration): Codec[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredCodec.derived[A]
     }
 
-    inline final def deriveConfiguredEncoder[A](using config: Configuration, m: Mirror.Of[A]): Encoder[A] = {
+    inline final def deriveConfiguredEncoder[A](using m: Mirror.Of[A], config: Configuration): Encoder[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredEncoder.derived[A]
     }
 
-    inline final def deriveConfiguredDecoder[A](using config: Configuration, m: Mirror.Of[A]): Decoder[A] = {
+    inline final def deriveConfiguredDecoder[A](using m: Mirror.Of[A], config: Configuration): Decoder[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredDecoder.derived[A]
     }
 
-    inline final def deriveEnumerationCodec[A](using config: Configuration, m: Mirror.SumOf[A]): Codec[A] = {
+    inline final def deriveEnumerationCodec[A](using m: Mirror.SumOf[A], config: Configuration = Configuration.default): Codec[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredEnumCodec.derived[A]
     }
 
-    inline final def deriveEnumerationDecoder[A](using config: Configuration, m: Mirror.SumOf[A]): Decoder[A] = {
+    inline final def deriveEnumerationDecoder[A](using  m: Mirror.SumOf[A], config: Configuration = Configuration.default): Decoder[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredEnumDecoder.derived[A]
     }
 
-    inline final def deriveEnumerationEncoder[A](using config: Configuration, m: Mirror.SumOf[A]): Encoder[A] = {
+    inline final def deriveEnumerationEncoder[A](using m: Mirror.SumOf[A], config: Configuration = Configuration.default): Encoder[A] = {
         given CoreConfiguration = toCoreConfig(config)
         ConfiguredEnumEncoder.derived[A]
     }
