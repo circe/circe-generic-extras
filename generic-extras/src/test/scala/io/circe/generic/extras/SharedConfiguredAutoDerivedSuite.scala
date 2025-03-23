@@ -33,7 +33,7 @@ import org.scalacheck.Prop.forAll
 
 import examples.*
 
-object ConfiguredAutoDerivedSuite {
+object SharedConfiguredAutoDerivedSuite {
 
   sealed trait ConfigExampleBase
   case class ConfigExampleFoo(thisIsAField: String, a: Int = 0, b: Double) extends ConfigExampleBase
@@ -65,8 +65,8 @@ object ConfiguredAutoDerivedSuite {
   implicit val arbitraryConfiguration: Arbitrary[Configuration] = Arbitrary(genConfiguration)
 }
 
-class ConfiguredAutoDerivedSuite extends CirceSuite {
-  import ConfiguredAutoDerivedSuite._
+class SharedConfiguredAutoDerivedSuite extends CirceSuite {
+  import SharedConfiguredAutoDerivedSuite._
 
   {
     implicit val config: Configuration = Configuration.default
@@ -293,25 +293,11 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
     }
   }
 
-  // {
-  //   import defaults._
-  //   checkAll("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].codec)
-  //   checkAll("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].codec)
-  //   checkAll("Codec[Qux[Int]]", CodecTests[Qux[Int]].codec)
-  //   checkAll("Codec[Foo]", CodecTests[Foo].codec)
-
-  //   property("Decoder[Int => Qux[String]] should decode partial JSON representations") {
-  //     forAll { (i: Int, s: String, j: Int) =>
-  //       val result = Json
-  //         .obj(
-  //           "a" -> Json.fromString(s),
-  //           "j" -> Json.fromInt(j)
-  //         )
-  //         .as[Int => Qux[String]]
-  //         .map(_(i))
-
-  //       assert(result === Right(Qux(i, s, j)))
-  //     }
-  //   }
-  // }
+  {
+    import defaults._
+    checkAll("Codec[Tuple1[Int]]", CodecTests[Tuple1[Int]].codec)
+    checkAll("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].codec)
+    checkAll("Codec[Qux[Int]]", CodecTests[Qux[Int]].codec)
+    checkAll("Codec[Foo]", CodecTests[Foo].codec)
+  }
 }

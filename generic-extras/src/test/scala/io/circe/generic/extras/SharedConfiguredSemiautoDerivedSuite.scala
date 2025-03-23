@@ -19,18 +19,17 @@ package io.circe.generic.extras
 import cats.kernel.Eq
 import io.circe.Codec
 import io.circe.Decoder
-import io.circe.DecodingFailure
 import io.circe.Encoder
 import io.circe.Json
 import io.circe.generic.extras.semiauto.*
 import io.circe.literal.*
-import io.circe.syntax.*
+import io.circe.testing.CodecTests
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 
-object ConfiguredSemiautoDerivedSuite {
+object SharedConfiguredSemiautoDerivedSuite {
   sealed trait ConfigExampleBase
   case class ConfigExampleFoo(thisIsAField: String, a: Int = 0, b: Double) extends ConfigExampleBase
   case object ConfigExampleBar extends ConfigExampleBase
@@ -60,51 +59,40 @@ object ConfiguredSemiautoDerivedSuite {
   val codecForConfigExampleBase: Codec.AsObject[ConfigExampleBase] = deriveConfiguredCodec
 }
 
-class ConfiguredSemiautoDerivedSuite extends CirceSuite {
-  import ConfiguredSemiautoDerivedSuite._
+class SharedConfiguredSemiautoDerivedSuite extends CirceSuite {
+  import SharedConfiguredSemiautoDerivedSuite._
 
-  property("it should support configured strict decoding") {
+  checkAll("Codec[ConfigExampleBase]", CodecTests[ConfigExampleBase].codec)
+  checkAll(
+    "Codec[ConfigExampleBase] via Codec",
+    CodecTests[ConfigExampleBase](codecForConfigExampleBase, codecForConfigExampleBase).codec
+  )
+  checkAll(
+    "Codec[ConfigExampleBase] via Decoder and Codec",
+    CodecTests[ConfigExampleBase](implicitly, codecForConfigExampleBase).codec
+  )
+  checkAll(
+    "Codec[ConfigExampleBase] via Encoder and Codec",
+    CodecTests[ConfigExampleBase](codecForConfigExampleBase, implicitly).codec
+  )
+
+  property("Semi-automatic derivation should support configuration") {
     forAll { (f: String, b: Double) =>
-      implicit val customConfig: Configuration =
-        Configuration.default.withSnakeCaseMemberNames.withDefaults
-          .withDiscriminator("type_field")
-          .withSnakeCaseConstructorNames
-          .withStrictDecoding
+      val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
+      val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
+      val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "b": $b}"""
 
-      implicit val decodeConfigExampleBase: Decoder[ConfigExampleBase] = deriveConfiguredDecoder
-
-      val json =
-        json"""
-            {"type_field": "config_example_foo", "this_is_a_field": $f, "b": $b, "stowaway_field": "I should not be here"}
-        """
-
-      val expectedError =
-        DecodingFailure("Strict decoding ConfigExampleFoo - unexpected fields: stowaway_field; valid fields: this_is_a_field, a, b, type_field.", Nil)
-
-
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Left(expectedError))
+      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
+      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
     }
   }
 
-  property("it should not transform discriminator for strict decoding checks") {
-    forAll { (f: String, b: Double) =>
-      implicit val customConfig: Configuration =
-        Configuration.default.withSnakeCaseMemberNames.withDefaults
-          .withDiscriminator("typeField")
-          .withSnakeCaseConstructorNames
-          .withStrictDecoding
+  property("A generically derived codec for an empty case class should not accept non-objects") {
+    forAll { (j: Json) =>
+      case class EmptyCc()
 
-      implicit val decodeConfigExampleBase: Decoder[ConfigExampleBase] = deriveConfiguredDecoder
-
-      val json = json"""{"typeField": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
-      val jsonExtra = json.mapObject(_.add("stowaway_field", "I should not be here".asJson))
-
-      val expectedError =
-        DecodingFailure("Strict decoding ConfigExampleFoo - unexpected fields: stowaway_field; valid fields: this_is_a_field, a, b, typeField.", Nil)
-
-      // We should not transform `typeField` into snake case when checking strictly used fields.
-      assert(clue(Decoder[ConfigExampleBase].decodeJson(json)).isRight)
-      assert(Decoder[ConfigExampleBase].decodeJson(jsonExtra) === Left(expectedError))
+      assert(deriveConfiguredDecoder[EmptyCc].decodeJson(j).isRight == j.isObject)
+      assert(deriveConfiguredCodec[EmptyCc].decodeJson(j).isRight == j.isObject)
     }
   }
 }

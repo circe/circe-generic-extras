@@ -25,7 +25,6 @@ import io.circe.Json
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
 import io.circe.syntax._
-import io.circe.testing.CodecTests
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
@@ -76,31 +75,6 @@ object ConfiguredSemiautoDerivedSuite {
 
 class ConfiguredSemiautoDerivedSuite extends CirceSuite {
   import ConfiguredSemiautoDerivedSuite._
-
-  checkAll("Codec[ConfigExampleBase]", CodecTests[ConfigExampleBase].codec)
-  checkAll(
-    "Codec[ConfigExampleBase] via Codec",
-    CodecTests[ConfigExampleBase](codecForConfigExampleBase, codecForConfigExampleBase).codec
-  )
-  checkAll(
-    "Codec[ConfigExampleBase] via Decoder and Codec",
-    CodecTests[ConfigExampleBase](implicitly, codecForConfigExampleBase).codec
-  )
-  checkAll(
-    "Codec[ConfigExampleBase] via Encoder and Codec",
-    CodecTests[ConfigExampleBase](codecForConfigExampleBase, implicitly).codec
-  )
-
-  property("Semi-automatic derivation should support configuration") {
-    forAll { (f: String, b: Double) =>
-      val foo: ConfigExampleBase = ConfigExampleFoo(f, 0, b)
-      val json = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "b": $b}"""
-      val expected = json"""{ "type": "config_example_foo", "this_is_a_field": $f, "a": 0, "b": $b}"""
-
-      assert(Encoder[ConfigExampleBase].apply(foo) === expected)
-      assert(Decoder[ConfigExampleBase].decodeJson(json) === Right(foo))
-    }
-  }
 
   test("it should call field modification times equal to field count") {
     var transformMemberNamesCallCount, transformConstructorCallCount = 0
@@ -291,15 +265,6 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
       val expected = Qux[String](i.getOrElse(q.i), a.getOrElse(q.a), j.getOrElse(q.j))
 
       assert(json.as[Qux[String] => Qux[String]].map(_(q)) === Right(expected))
-    }
-  }
-
-  property("A generically derived codec for an empty case class should not accept non-objects") {
-    forAll { (j: Json) =>
-      case class EmptyCc()
-
-      assert(deriveConfiguredDecoder[EmptyCc].decodeJson(j).isRight == j.isObject)
-      assert(deriveConfiguredCodec[EmptyCc].decodeJson(j).isRight == j.isObject)
     }
   }
 }
