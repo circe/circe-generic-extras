@@ -5,10 +5,10 @@ import scala.compiletime.*
 import scala.quoted.*
 
 private[extras] object UnwrappedDerivationMacros {
-  inline final def deriveUnwrappedCodec[A]: Codec[A] = 
+  inline final def deriveUnwrappedCodec[A]: Codec[A] =
     Codec.from(
-        decodeA = deriveUnwrappedDecoder[A],
-        encodeA = deriveUnwrappedEncoder[A]
+      decodeA = deriveUnwrappedDecoder[A],
+      encodeA = deriveUnwrappedEncoder[A]
     )
 
   inline final def deriveUnwrappedDecoder[A]: Decoder[A] = ${ deriveUnwrappedDecoderImpl[A] }
@@ -25,10 +25,7 @@ private[extras] object UnwrappedDerivationMacros {
     underlyingTypeRepr.asType match {
       case '[t] =>
         def wrap(expr: Expr[t]): Expr[A] =
-          New(Inferred(wrapperTypeRepr))
-            .select(wrapperSymbol.primaryConstructor)
-            .appliedTo(expr.asTerm)
-            .asExprOf[A]
+          New(Inferred(wrapperTypeRepr)).select(wrapperSymbol.primaryConstructor).appliedTo(expr.asTerm).asExprOf[A]
 
         '{
           summonInline[Decoder[t]].map(a => ${ wrap('a) })
@@ -50,10 +47,7 @@ private[extras] object UnwrappedDerivationMacros {
     underlyingTypeRepr.asType match {
       case '[t] =>
         def unwrap(expr: Expr[A]): Expr[t] =
-          expr.asTerm
-            .select(underlyingField)
-            .appliedToArgss(Nil)
-            .asExprOf[t]
+          expr.asTerm.select(underlyingField).appliedToArgss(Nil).asExprOf[t]
 
         '{
           summonInline[Encoder[t]].contramap[A](a => ${ unwrap('a) })
