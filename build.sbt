@@ -23,8 +23,7 @@ ThisBuild / tlCiReleaseTags := true
 ThisBuild / tlFatalWarnings := false // we currently have a lot of warnings that will need to be fixed
 
 ThisBuild / organization := "io.circe"
-// ThisBuild / scalaVersion := Scala213V
-ThisBuild / scalaVersion := Scala3V
+ThisBuild / scalaVersion := Scala213V
 ThisBuild / crossScalaVersions := List(Scala212V, Scala213V, Scala3V)
 
 ThisBuild / githubWorkflowJavaVersions := Seq("8", "17").map(JavaSpec.temurin)
@@ -119,7 +118,6 @@ lazy val benchmarks = project
     moduleName := "circe-generic-extras-benchmarks",
     libraryDependencies ++= List(
       "io.circe" %%% "circe-parser" % circeVersion,
-      // scalaOrganization.value % "scala-reflect" % scalaVersion.value
     )
   )
   .dependsOn(genericExtras.jvm)
