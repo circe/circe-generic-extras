@@ -79,8 +79,10 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
         """
 
       val expectedError =
-        DecodingFailure("Strict decoding ConfigExampleFoo - unexpected fields: stowaway_field; valid fields: this_is_a_field, a, b, type_field.", Nil)
-
+        DecodingFailure(
+          "Strict decoding ConfigExampleFoo - unexpected fields: stowaway_field; valid fields: this_is_a_field, a, b, type_field.",
+          Nil
+        )
 
       assert(Decoder[ConfigExampleBase].decodeJson(json) === Left(expectedError))
     }
@@ -100,7 +102,10 @@ class ConfiguredSemiautoDerivedSuite extends CirceSuite {
       val jsonExtra = json.mapObject(_.add("stowaway_field", "I should not be here".asJson))
 
       val expectedError =
-        DecodingFailure("Strict decoding ConfigExampleFoo - unexpected fields: stowaway_field; valid fields: this_is_a_field, a, b, typeField.", Nil)
+        DecodingFailure(
+          "Strict decoding ConfigExampleFoo - unexpected fields: stowaway_field; valid fields: this_is_a_field, a, b, typeField.",
+          Nil
+        )
 
       // We should not transform `typeField` into snake case when checking strictly used fields.
       assert(clue(Decoder[ConfigExampleBase].decodeJson(json)).isRight)

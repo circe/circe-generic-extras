@@ -117,7 +117,7 @@ lazy val benchmarks = project
   .settings(
     moduleName := "circe-generic-extras-benchmarks",
     libraryDependencies ++= List(
-      "io.circe" %%% "circe-parser" % circeVersion,
+      "io.circe" %%% "circe-parser" % circeVersion
     )
   )
   .dependsOn(genericExtras.jvm)
