@@ -18,6 +18,7 @@ package io.circe.generic.extras
 
 import io.circe.*
 import io.circe.derivation.{ Configuration as CoreConfiguration, * }
+
 import scala.deriving.Mirror
 
 object semiauto {

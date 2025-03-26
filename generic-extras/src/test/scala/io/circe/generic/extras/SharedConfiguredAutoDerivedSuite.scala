@@ -23,15 +23,15 @@ import io.circe.Decoder
 import io.circe.DecodingFailure
 import io.circe.Encoder
 import io.circe.Json
-import io.circe.generic.extras.auto.*
-import io.circe.literal.*
+import io.circe.generic.extras.auto._
+import io.circe.literal._
 import io.circe.testing.CodecTests
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.arbitrary
 import org.scalacheck.Gen
 import org.scalacheck.Prop.forAll
 
-import examples.*
+import examples._
 
 object SharedConfiguredAutoDerivedSuite {
 

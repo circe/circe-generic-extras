@@ -17,6 +17,7 @@
 package io.circe.generic.extras
 
 import io.circe.*
+
 import scala.compiletime.*
 import scala.quoted.*
 
