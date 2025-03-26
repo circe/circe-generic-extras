@@ -18,7 +18,6 @@ package io.circe.generic.extras
 
 import io.circe.Json
 import io.circe.generic.extras.auto._
-import io.circe.testing.CodecTests
 import org.scalacheck.Prop.forAll
 
 import examples._

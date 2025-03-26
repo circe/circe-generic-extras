@@ -16,14 +16,12 @@
 
 package io.circe.generic.extras.examples
 
-import cats.instances.AllInstances
 import cats.kernel.Eq
 import cats.syntax.functor._
 import io.circe.Decoder
 import io.circe.DecodingFailure
 import io.circe.Encoder
 import io.circe.Json
-import io.circe.testing.ArbitraryInstances
 import org.scalacheck.Arbitrary
 import org.scalacheck.Gen
 
