@@ -11,13 +11,6 @@ val jawnVersion = "1.6.0"
 val munitVersion = "1.0.0"
 val disciplineMunitVersion = "2.0.0"
 
-def crossSettings[T](scalaVersion: String, if3: List[T], if2: List[T]) =
-  CrossVersion.partialVersion(scalaVersion) match {
-    case Some((3, _))       => if3
-    case Some((2, 12 | 13)) => if2
-    case _                  => Nil
-  }
-
 ThisBuild / tlBaseVersion := "0.14"
 ThisBuild / tlCiReleaseTags := true
 ThisBuild / tlFatalWarnings := false // we currently have a lot of warnings that will need to be fixed
@@ -29,6 +22,7 @@ ThisBuild / crossScalaVersions := List(Scala212V, Scala213V, Scala3V)
 ThisBuild / githubWorkflowJavaVersions := Seq("8", "17").map(JavaSpec.temurin)
 
 ThisBuild / tlCiScalafmtCheck := true
+ThisBuild / tlVersionIntroduced := Map("3" -> "0.14.5")
 
 ThisBuild / githubWorkflowAddedJobs ++= Seq(
   WorkflowJob(
@@ -83,14 +77,14 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
           compilerPlugin(("org.scalamacros" % "paradise" % paradiseVersion).cross(CrossVersion.patch))
         )
       } else Nil
-    ) ++ crossSettings(
-      scalaBinaryVersion.value,
-      if3 = List(),
-      if2 = List(
-        scalaOrganization.value % "scala-compiler" % scalaVersion.value % Provided,
-        scalaOrganization.value % "scala-reflect" % scalaVersion.value % Provided
-      )
-    ),
+    ) ++ {
+      if (scalaBinaryVersion.value == "2.12" || scalaBinaryVersion.value == "2.13")
+        Seq(
+          scalaOrganization.value % "scala-compiler" % scalaVersion.value % Provided,
+          scalaOrganization.value % "scala-reflect" % scalaVersion.value % Provided
+        )
+      else Seq.empty
+    },
     testFrameworks := List(new TestFramework("munit.Framework")), // Override setting so Scalatest is disabled
     // docMappingsApiDir := "api",
     // addMappingsToSiteDir(Compile / packageDoc / mappings, docMappingsApiDir),
@@ -108,7 +102,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
   )
   .jsSettings()
   .nativeSettings(
-    tlVersionIntroduced := List("2.12", "2.13").map(_ -> "0.14.4").toMap
+    tlVersionIntroduced := Map("2.12" -> "0.14.4", "2.13" -> "0.14.4", "3" -> "0.14.5")
   )
   .configure(do_configure)
 
