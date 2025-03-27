@@ -28,11 +28,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04]
-        scala: [2.12, 2.13]
+        scala: [2.12, 2.13, 3]
         java: [temurin@8, temurin@17]
         project: [rootJS, rootJVM, rootNative]
         exclude:
           - scala: 2.12
+            java: temurin@17
+          - scala: 3
             java: temurin@17
           - project: rootJS
             java: temurin@17
@@ -224,6 +226,36 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
+      - name: Download target directories (3, rootJS)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3-rootJS
+
+      - name: Inflate target directories (3, rootJS)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3, rootJVM)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3-rootJVM
+
+      - name: Inflate target directories (3, rootJVM)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3, rootNative)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3-rootNative
+
+      - name: Inflate target directories (3, rootNative)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
       - name: Import signing key
         if: env.PGP_SECRET != '' && env.PGP_PASSPHRASE == ''
         env:
@@ -294,7 +326,7 @@ jobs:
       - name: Submit Dependencies
         uses: scalacenter/sbt-dependency-submission@v2
         with:
-          modules-ignore: circe-generic-extras-benchmarks_2.12 circe-generic-extras-benchmarks_2.13 rootjs_2.12 rootjs_2.13 rootjvm_2.12 rootjvm_2.13 rootnative_2.12 rootnative_2.13
+          modules-ignore: circe-generic-extras-benchmarks_2.12 circe-generic-extras-benchmarks_2.13 circe-generic-extras-benchmarks_3 rootjs_2.12 rootjs_2.13 rootjs_3 rootjvm_2.12 rootjvm_2.13 rootjvm_3 rootnative_2.12 rootnative_2.13 rootnative_3
           configs-ignore: test scala-tool scala-doc-tool test-internal
 
   coverage:
@@ -302,7 +334,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-22.04]
-        scala: [2.13.16]
+        scala: [2.13.16, 3.3.5]
         java: [temurin@11]
     runs-on: ${{ matrix.os }}
     steps:

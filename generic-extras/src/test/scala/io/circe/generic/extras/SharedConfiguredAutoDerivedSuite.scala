@@ -33,7 +33,7 @@ import org.scalacheck.Prop.forAll
 
 import examples._
 
-object ConfiguredAutoDerivedSuite {
+object SharedConfiguredAutoDerivedSuite {
 
   sealed trait ConfigExampleBase
   case class ConfigExampleFoo(thisIsAField: String, a: Int = 0, b: Double) extends ConfigExampleBase
@@ -65,8 +65,8 @@ object ConfiguredAutoDerivedSuite {
   implicit val arbitraryConfiguration: Arbitrary[Configuration] = Arbitrary(genConfiguration)
 }
 
-class ConfiguredAutoDerivedSuite extends CirceSuite {
-  import ConfiguredAutoDerivedSuite._
+class SharedConfiguredAutoDerivedSuite extends CirceSuite {
+  import SharedConfiguredAutoDerivedSuite._
 
   {
     implicit val config: Configuration = Configuration.default
@@ -74,7 +74,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#transformMemberNames should support member name transformation using snake_case") {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val snakeCaseConfig: Configuration = Configuration.default.withSnakeCaseMemberNames
 
       import foo._
@@ -86,7 +86,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#transformMemberNames should support member name transformation using SCREAMING_SNAKE_CASE") {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val snakeCaseConfig: Configuration = Configuration.default.withScreamingSnakeCaseMemberNames
 
       import foo._
@@ -98,7 +98,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#transformMemberNames should support member name transformation using kebab-case") {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val kebabCaseConfig: Configuration = Configuration.default.withKebabCaseMemberNames
 
       import foo._
@@ -110,7 +110,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#transformMemberNames should support member name transformation using PascalCase") {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val pascalCaseConfig: Configuration = Configuration.default.withPascalCaseMemberNames
 
       import foo._
@@ -201,7 +201,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#discriminator should support a field indicating constructor") {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val withDefaultsConfig: Configuration = Configuration.default.withDiscriminator("type")
 
       import foo._
@@ -213,7 +213,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#transformConstructorNames should support constructor name transformation with snake_case") {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val snakeCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withSnakeCaseConstructorNames
 
@@ -228,7 +228,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   property(
     "Configuration#transformConstructorNames should support constructor name transformation with SCREAMING_SNAKE_CASE"
   ) {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val snakeCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withScreamingSnakeCaseConstructorNames
 
@@ -241,7 +241,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#transformConstructorNames should support constructor name transformation with kebab-case") {
-    forAll { foo: ConfigExampleFoo =>
+    forAll { (foo: ConfigExampleFoo) =>
       implicit val kebabCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withKebabCaseConstructorNames
 
@@ -267,7 +267,7 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
       implicit val arbitraryExampleFoo: Arbitrary[pascalExampleFoo] = Arbitrary(genExampleFoo)
     }
 
-    forAll { foo: pascalExampleFoo =>
+    forAll { (foo: pascalExampleFoo) =>
       implicit val pascalCaseConfig: Configuration =
         Configuration.default.withDiscriminator("type").withPascalCaseConstructorNames
 
@@ -299,19 +299,5 @@ class ConfiguredAutoDerivedSuite extends CirceSuite {
     checkAll("Codec[(Int, Int, Foo)]", CodecTests[(Int, Int, Foo)].codec)
     checkAll("Codec[Qux[Int]]", CodecTests[Qux[Int]].codec)
     checkAll("Codec[Foo]", CodecTests[Foo].codec)
-
-    property("Decoder[Int => Qux[String]] should decode partial JSON representations") {
-      forAll { (i: Int, s: String, j: Int) =>
-        val result = Json
-          .obj(
-            "a" -> Json.fromString(s),
-            "j" -> Json.fromInt(j)
-          )
-          .as[Int => Qux[String]]
-          .map(_(i))
-
-        assert(result === Right(Qux(i, s, j)))
-      }
-    }
   }
 }
