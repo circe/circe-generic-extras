@@ -22,11 +22,10 @@ import io.circe.Encoder
 import io.circe.generic.extras.semiauto._
 import io.circe.literal._
 import io.circe.testing.CodecTests
-import shapeless.test.illTyped
 
 import examples._
 
-class EnumerationSemiautoDerivedSuite extends CirceSuite {
+class SharedEnumerationSemiautoDerivedSuite extends CirceSuite {
   implicit val decodeCardinalDirection: Decoder[CardinalDirection] = deriveEnumerationDecoder
   implicit val encodeCardinalDirection: Encoder[CardinalDirection] = deriveEnumerationEncoder
   val codecForCardinalDirection: Codec[CardinalDirection] = deriveEnumerationCodec
@@ -45,24 +44,12 @@ class EnumerationSemiautoDerivedSuite extends CirceSuite {
     CodecTests[CardinalDirection](codecForCardinalDirection, implicitly).codec
   )
 
-  test("deriveEnumerationDecoder should not compile on an ADT with case classes") {
-    implicit val config: Configuration = Configuration.default
-    val _ = config
-    illTyped("deriveEnumerationDecoder[ExtendedCardinalDirection]")
-  }
-
   test("it should respect Configuration snake-case") {
     implicit val config: Configuration = Configuration.default.withSnakeCaseConstructorNames
     val _ = config
     val decodeMary = deriveEnumerationDecoder[Mary]
     val expected = json""""little_lamb""""
     assert(decodeMary.decodeJson(expected) === Right(LittleLamb))
-  }
-
-  test("deriveEnumerationEncoder should not compile on an ADT with case classes") {
-    implicit val config: Configuration = Configuration.default
-    val _ = config
-    illTyped("deriveEnumerationEncoder[ExtendedCardinalDirection]")
   }
 
   test("it should respect Configuration kebab-case") {
