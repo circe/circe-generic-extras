@@ -35,17 +35,19 @@ import examples._
 
 object SharedConfiguredAutoDerivedSuite {
 
+  case class InnerExample(a: Double)
+  object InnerExample {
+    implicit val eqInnerExample: Eq[InnerExample] = Eq.fromUniversalEquals
+    val genInnerExample: Gen[InnerExample] = Gen.resultOf(InnerExample.apply _)
+    implicit val arbitraryInnerExample: Arbitrary[InnerExample] = Arbitrary(genInnerExample)
+  }
   sealed trait ConfigExampleBase
-  case class ConfigExampleFoo(thisIsAField: String, a: Int = 0, b: Double) extends ConfigExampleBase
+  case class ConfigExampleFoo(thisIsAField: String, a: Int = 0, b: InnerExample) extends ConfigExampleBase
   case object ConfigExampleBar extends ConfigExampleBase
 
   object ConfigExampleFoo {
     implicit val eqConfigExampleFoo: Eq[ConfigExampleFoo] = Eq.fromUniversalEquals
-    val genConfigExampleFoo: Gen[ConfigExampleFoo] = for {
-      thisIsAField <- arbitrary[String]
-      a <- arbitrary[Int]
-      b <- arbitrary[Double]
-    } yield ConfigExampleFoo(thisIsAField, a, b)
+    val genConfigExampleFoo: Gen[ConfigExampleFoo] = Gen.resultOf(ConfigExampleFoo.apply _)
     implicit val arbitraryConfigExampleFoo: Arbitrary[ConfigExampleFoo] = Arbitrary(genConfigExampleFoo)
   }
 
@@ -56,12 +58,7 @@ object SharedConfiguredAutoDerivedSuite {
     implicit val arbitraryConfigExampleBase: Arbitrary[ConfigExampleBase] = Arbitrary(genConfigExampleBase)
   }
 
-  val genConfiguration: Gen[Configuration] = for {
-    transformMemberNames <- arbitrary[String => String]
-    transformConstructorNames <- arbitrary[String => String]
-    useDefaults <- arbitrary[Boolean]
-    discriminator <- arbitrary[Option[String]]
-  } yield Configuration(transformMemberNames, transformConstructorNames, useDefaults, discriminator)
+  val genConfiguration: Gen[Configuration] = Gen.resultOf(Configuration.apply _)
   implicit val arbitraryConfiguration: Arbitrary[Configuration] = Arbitrary(genConfiguration)
 }
 
@@ -122,7 +119,7 @@ class SharedConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration#useDefaults should support using default values during decoding") {
-    forAll { (f: String, b: Double) =>
+    forAll { (f: String, b: InnerExample) =>
       implicit val withDefaultsConfig: Configuration = Configuration.default.withDefaults
 
       val foo: ConfigExampleFoo = ConfigExampleFoo(f, 0, b)
@@ -280,7 +277,7 @@ class SharedConfiguredAutoDerivedSuite extends CirceSuite {
   }
 
   property("Configuration options should work together") {
-    forAll { (f: String, b: Double) =>
+    forAll { (f: String, b: InnerExample) =>
       implicit val customConfig: Configuration =
         Configuration.default.withSnakeCaseMemberNames.withDefaults.withDiscriminator("type")
 
