@@ -48,7 +48,7 @@ trait ReprAsObjectEncoder[A] extends Encoder.AsObject[A] {
     name: String,
     discriminator: Option[String]
   ): JsonObject = discriminator match {
-    case None => JsonObject.singleton(name, encode(value))
+    case None       => JsonObject.singleton(name, encode(value))
     case Some(disc) =>
       encode match {
         case oe: Encoder.AsObject[B] @unchecked => oe.encodeObject(value).add(disc, Json.fromString(name))
