@@ -24,15 +24,17 @@ concurrency:
 
 jobs:
   build:
-    name: Build and Test
+    name: Test
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        scala: [2.12, 2.13]
+        os: [ubuntu-22.04]
+        scala: [2.12, 2.13, 3]
         java: [temurin@8, temurin@17]
         project: [rootJS, rootJVM, rootNative]
         exclude:
           - scala: 2.12
+            java: temurin@17
+          - scala: 3
             java: temurin@17
           - project: rootJS
             java: temurin@17
@@ -41,14 +43,13 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 60
     steps:
-      - name: Install sbt
-        if: contains(runner.os, 'macos')
-        run: brew install sbt
-
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Setup Java (temurin@8)
         id: setup-java-temurin-8
@@ -80,11 +81,11 @@ jobs:
         run: sbt githubWorkflowCheck
 
       - name: Check headers and formatting
-        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-latest'
+        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-22.04'
         run: sbt 'project ${{ matrix.project }}' '++ ${{ matrix.scala }}' headerCheckAll scalafmtCheckAll 'project /' scalafmtSbtCheck
 
       - name: Check scalafix lints
-        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-latest'
+        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-22.04'
         run: sbt 'project ${{ matrix.project }}' '++ ${{ matrix.scala }}' 'scalafixAll --check'
 
       - name: scalaJSLink
@@ -99,11 +100,11 @@ jobs:
         run: sbt 'project ${{ matrix.project }}' '++ ${{ matrix.scala }}' test
 
       - name: Check binary compatibility
-        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-latest'
+        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-22.04'
         run: sbt 'project ${{ matrix.project }}' '++ ${{ matrix.scala }}' mimaReportBinaryIssues
 
       - name: Generate API documentation
-        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-latest'
+        if: matrix.java == 'temurin@8' && matrix.os == 'ubuntu-22.04'
         run: sbt 'project ${{ matrix.project }}' '++ ${{ matrix.scala }}' doc
 
       - name: Make target directories
@@ -127,18 +128,17 @@ jobs:
     if: github.event_name != 'pull_request' && (startsWith(github.ref, 'refs/tags/v') || github.ref == 'refs/heads/main')
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install sbt
-        if: contains(runner.os, 'macos')
-        run: brew install sbt
-
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Setup Java (temurin@8)
         id: setup-java-temurin-8
@@ -226,6 +226,36 @@ jobs:
           tar xf targets.tar
           rm targets.tar
 
+      - name: Download target directories (3, rootJS)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3-rootJS
+
+      - name: Inflate target directories (3, rootJS)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3, rootJVM)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3-rootJVM
+
+      - name: Inflate target directories (3, rootJVM)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
+      - name: Download target directories (3, rootNative)
+        uses: actions/download-artifact@v4
+        with:
+          name: target-${{ matrix.os }}-${{ matrix.java }}-3-rootNative
+
+      - name: Inflate target directories (3, rootNative)
+        run: |
+          tar xf targets.tar
+          rm targets.tar
+
       - name: Import signing key
         if: env.PGP_SECRET != '' && env.PGP_PASSPHRASE == ''
         env:
@@ -252,21 +282,20 @@ jobs:
 
   dependency-submission:
     name: Submit Dependencies
-    if: github.event_name != 'pull_request'
+    if: github.event.repository.fork == false && github.event_name != 'pull_request'
     strategy:
       matrix:
-        os: [ubuntu-latest]
+        os: [ubuntu-22.04]
         java: [temurin@8]
     runs-on: ${{ matrix.os }}
     steps:
-      - name: Install sbt
-        if: contains(runner.os, 'macos')
-        run: brew install sbt
-
       - name: Checkout current branch (full)
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Setup sbt
+        uses: sbt/setup-sbt@v1
 
       - name: Setup Java (temurin@8)
         id: setup-java-temurin-8
@@ -297,15 +326,15 @@ jobs:
       - name: Submit Dependencies
         uses: scalacenter/sbt-dependency-submission@v2
         with:
-          modules-ignore: circe-generic-extras-benchmarks_2.12 circe-generic-extras-benchmarks_2.13 rootjs_2.12 rootjs_2.13 rootjvm_2.12 rootjvm_2.13 rootnative_2.12 rootnative_2.13
+          modules-ignore: circe-generic-extras-benchmarks_2.12 circe-generic-extras-benchmarks_2.13 circe-generic-extras-benchmarks_3 rootjs_2.12 rootjs_2.13 rootjs_3 rootjvm_2.12 rootjvm_2.13 rootjvm_3 rootnative_2.12 rootnative_2.13 rootnative_3
           configs-ignore: test scala-tool scala-doc-tool test-internal
 
   coverage:
     name: Generate coverage report
     strategy:
       matrix:
-        os: [ubuntu-latest]
-        scala: [2.13.14]
+        os: [ubuntu-22.04]
+        scala: [2.13.16, 3.3.6]
         java: [temurin@11]
     runs-on: ${{ matrix.os }}
     steps:

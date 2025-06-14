@@ -68,7 +68,7 @@ abstract class ReprDecoder[A] extends Decoder[A] {
     // semantic.
     (c.focus.isEmpty, defaults.get(name)) match {
       case (true, Some(d: B @unchecked)) => Right(d)
-      case (_, Some(d: B @unchecked)) =>
+      case (_, Some(d: B @unchecked))    =>
         decoder.tryDecode(c) match {
           case Left(_) if c.focus.contains(JNull) =>
             Right(d)
@@ -87,7 +87,7 @@ abstract class ReprDecoder[A] extends Decoder[A] {
   ): Decoder.AccumulatingResult[B] =
     (c.focus.isEmpty, defaults.get(name)) match {
       case (true, Some(d: B @unchecked)) => Validated.valid(d)
-      case (_, Some(d: B @unchecked)) =>
+      case (_, Some(d: B @unchecked))    =>
         decoder.tryDecodeAccumulating(c) match {
           case Validated.Invalid(_) if c.focus.contains(JNull) =>
             Validated.valid(d)
