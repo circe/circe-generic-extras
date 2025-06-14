@@ -8,7 +8,8 @@ val circeVersion = "0.14.13"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.6.0"
-val munitVersion = "1.0.0"
+val munitVersion = "1.1.1"
+val munitScalacheckVersion = "1.1.0"
 val disciplineMunitVersion = "2.0.0"
 
 ThisBuild / tlBaseVersion := "0.14"
@@ -68,7 +69,7 @@ lazy val genericExtras = crossProject(JSPlatform, JVMPlatform, NativePlatform)
       "io.circe" %%% "circe-literal" % circeVersion % Test,
       "io.circe" %%% "circe-testing" % circeVersion % Test,
       "org.scalameta" %%% "munit" % munitVersion % Test,
-      "org.scalameta" %%% "munit-scalacheck" % munitVersion % Test,
+      "org.scalameta" %%% "munit-scalacheck" % munitScalacheckVersion % Test,
       "org.typelevel" %%% "discipline-munit" % disciplineMunitVersion % Test,
       "org.typelevel" %% "jawn-parser" % jawnVersion % Test
     ) ++ (
