@@ -4,7 +4,7 @@ val Scala212V = "2.12.20"
 val Scala213V = "2.13.16"
 val Scala3V = "3.3.6"
 
-val circeVersion = "0.14.14"
+val circeVersion = "0.14.15"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.6.0"
