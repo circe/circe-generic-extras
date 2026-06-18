@@ -42,7 +42,8 @@ This library releases at a different cadence than [Circe], any apparent relation
 
 | Circe Generic Extras Version | Circe  | Scala 2 | Scala 3 | Scala JVM | Scala.JS | Scala Native |
 |------------------------------|--------|---------|---------|-----------|----------|--------------|
-| 0.14.3 and later             | 0.14.x | ✅      | ❌      | ✅        | ✅       | ✅           |
+| 0.14.5-RC1 and later         | 0.14.x | ✅      | ✅      | ✅        | ✅       | ✅           |
+| 0.14.3                       | 0.14.x | ✅      | ❌      | ✅        | ✅       | ✅           |
 | 0.14.2                       | 0.14.x | ✅      | ❌      | ✅        | ✅       | ❌️           |
 | 0.14.1                       | 0.14.x | ✅      | ❌      | ✅        | ✅       | ❌️           |
 | 0.14.0                       | 0.14.x | ✅      | ❌      | ✅        | ✅       | ❌️           |
