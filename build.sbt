@@ -8,7 +8,7 @@ val circeVersion = "0.14.14"
 val paradiseVersion = "2.1.1"
 
 val jawnVersion = "1.7.0"
-val munitVersion = "1.2.4"
+val munitVersion = "1.3.4"
 val munitScalacheckVersion = "1.2.0"
 val disciplineMunitVersion = "2.0.0"
 
